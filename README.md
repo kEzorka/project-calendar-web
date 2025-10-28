@@ -17,7 +17,7 @@ A project calendar web application scaffold built with **React + TypeScript**
 
 1. Clone the repository:
    ```bash
-   git clone git@github.com:USERNAME/project-calendar-web.git
+   git clone git@github.com:kEzorka/project-calendar-web.git
    cd project-calendar-web
    ```
 
