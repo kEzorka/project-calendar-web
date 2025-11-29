@@ -1,9 +1,18 @@
+/**
+ * ИСПОЛЬЗУЕТСЯ В:
+ * 
+ * UserSearch.tsx:
+ *   import type { User } from '../minimal_test/types';
+ * 
+ * TaskDetailModal.tsx:
+ *   import type { Task, Assignment } from '../minimal_test/types';
+ */
+
 export interface User {
   id: string;
   username: string;
   email: string;
   fullname: string;
-  timezone: string;
 }
 
 export interface Task {
@@ -15,7 +24,6 @@ export interface Task {
   startdate?: string;
   enddate?: string;
   estimatedhours?: number;
-  parenttaskid?: string | null;
 }
 
 export interface Assignment {
@@ -24,20 +32,4 @@ export interface Assignment {
   userid: string;
   role: 'owner' | 'supervisor' | 'executor' | 'hybrid' | 'spectator';
   allocatedhours: number;
-}
-
-export interface CalendarEvent {
-  id: string;
-  taskid: string;
-  title: string;
-  start: Date;
-  end: Date;
-  resource?: Task;
-}
-
-export interface WorkScheduleDay {
-  dayofweek: number;
-  isworkingday: boolean;
-  starttime?: string;
-  endtime?: string;
 }

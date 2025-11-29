@@ -1,52 +1,49 @@
+/**
+ * ИСПОЛЬЗУЕТСЯ В:
+ * 
+ * UserSearch.tsx:
+ *   import { Button } from '../minimal_test/ui/Button';
+ *   <Button onClick={() => onSelect(user)}>Выбрать</Button>
+ * 
+ * TaskDetailModal.tsx:
+ *   import { Button } from '../minimal_test/ui/Button';
+ *   <Button variant="danger" onClick={onDelete}>Удалить</Button>
+ *   <Button variant="secondary" onClick={onClose}>Закрыть</Button>
+ */
+
 import React from 'react';
 
 interface ButtonProps {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
-  disabled?: boolean;
-  loading?: boolean;
+  variant?: 'primary' | 'secondary' | 'danger';
   onClick?: () => void;
   children: React.ReactNode;
-  type?: 'button' | 'submit' | 'reset';
-  className?: string;
+  type?: 'button' | 'submit';
+  disabled?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
-  size = 'md',
-  disabled = false,
-  loading = false,
   onClick,
   children,
   type = 'button',
-  className = '',
+  disabled = false,
 }) => {
-  const baseStyles = 'rounded font-medium transition-colors focus:outline-none focus:ring-2';
-  
-  const variantStyles = {
+  const styles: Record<string, string> = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
     danger: 'bg-red-600 text-white hover:bg-red-700',
-    ghost: 'bg-transparent hover:bg-gray-100',
-    outline: 'border border-gray-300 hover:bg-gray-50',
-  };
-  
-  const sizeStyles = {
-    sm: 'px-3 py-1 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
   };
 
   return (
     <button
       type={type}
       onClick={onClick}
-      disabled={disabled || loading}
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className} ${
+      disabled={disabled}
+      className={`px-4 py-2 rounded font-medium transition-colors ${styles[variant]} ${
         disabled ? 'opacity-50 cursor-not-allowed' : ''
       }`}
     >
-      {loading ? 'Loading...' : children}
+      {children}
     </button>
   );
 };
