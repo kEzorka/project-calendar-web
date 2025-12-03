@@ -1,0 +1,87 @@
+@import '../../styles/variables.scss';
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn $transition-base;
+}
+
+.modal {
+  background-color: white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-xl;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: scaleIn $transition-base;
+
+  &--sm {
+    width: 400px;
+  }
+
+  &--md {
+    width: 600px;
+  }
+
+  &--lg {
+    width: 800px;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-6;
+    border-bottom: 1px solid $grey-200;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    margin: 0;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: $text-secondary;
+    transition: color $transition-base;
+
+    &:hover {
+      color: $text-primary;
+    }
+  }
+
+  &__content {
+    padding: $spacing-6;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
