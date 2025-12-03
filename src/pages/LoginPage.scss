@@ -1,0 +1,60 @@
+@import '../styles/variables.scss';
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, $primary-light 0%, $secondary-light 100%);
+  padding: $spacing-6;
+
+  &__card {
+    max-width: 450px;
+    width: 100%;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-6;
+
+    h1 {
+      font-size: $font-size-3xl;
+      color: $text-primary;
+      margin-bottom: $spacing-2;
+    }
+
+    p {
+      color: $text-secondary;
+      font-size: $font-size-base;
+    }
+  }
+
+  &__submit {
+    width: 100%;
+    margin-top: $spacing-4;
+  }
+
+  &__error {
+    background-color: lighten($danger, 40%);
+    color: $danger;
+    padding: $spacing-3;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-4;
+    text-align: center;
+  }
+
+  &__footer {
+    text-align: center;
+    margin-top: $spacing-4;
+    color: $text-secondary;
+
+    a {
+      color: $primary;
+      font-weight: $font-weight-medium;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

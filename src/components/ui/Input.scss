@@ -1,0 +1,61 @@
+@import '../../styles/variables.scss';
+
+.input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: $spacing-4;
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    margin-bottom: $spacing-2;
+  }
+
+  &__required {
+    color: $danger;
+    margin-left: $spacing-1;
+  }
+
+  &__field {
+    padding: $spacing-3;
+    border: 2px solid $grey-300;
+    border-radius: $radius-md;
+    font-size: $font-size-base;
+    font-family: $font-family-base;
+    transition: border-color $transition-base;
+
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+
+    &::placeholder {
+      color: $text-disabled;
+    }
+
+    &--error {
+      border-color: $danger;
+
+      &:focus {
+        border-color: $danger;
+      }
+    }
+
+    &:disabled {
+      background-color: $grey-100;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea.input__field {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  &__error {
+    font-size: $font-size-sm;
+    color: $danger;
+    margin-top: $spacing-1;
+  }
+}
