@@ -1,5 +1,4 @@
-// TaskDetailModal.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../minimal_test/ui/Modal';
 import { Card } from '../minimal_test/ui/Card';
 import { Button } from '../minimal_test/ui/Button';
@@ -25,6 +24,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
 }) => {
     if (!isOpen) return null; // если модалка закрыта, то ничего не рисуем
 
+    const [showConfirm, setShowConfirm] = useState(false); // локальный стейт для модалки подтверждения
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Детали задачи">
             {loading && (
@@ -39,7 +40,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                 </Card>
             )}
 
-            {!loading && task && ( // основные данных задачи
+            {!loading && task && ( // основные данные задачи
                 <div className="flex flex-col gap-4">
 
                     <Card title={task.title}>
@@ -74,7 +75,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                         </div>
                     </Card>
 
-                    <div className="flex justify-end gap-2 mt-2"> 
+                    <div className="flex justify-end gap-2 mt-2">
                         <Button variant="secondary" onClick={onClose}>
                             Закрыть
                         </Button>
@@ -91,17 +92,44 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                         {onDelete && (
                             <Button
                                 variant="danger"
-                                onClick={() => {
-                                    if (confirm('Удалить задачу? Это действие необратимо.')) {
-                                        onDelete(task.id);
-                                    }
-                                }}
+                                onClick={() => setShowConfirm(true)} // вместо confirm() открываем кастомную модалку
                             >
                                 Удалить
                             </Button>
                         )}
                     </div>
                 </div>
+            )}
+
+            {showConfirm && (
+                <Modal
+                    isOpen={showConfirm}
+                    onClose={() => setShowConfirm(false)} // закрыть модалку
+                    title="Подтверждение удаления"
+                >
+                    <div className="flex flex-col gap-4">
+                        <p>Вы уверены, что хотите удалить эту задачу? Это действие необратимо.</p>
+
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                variant="secondary"
+                                onClick={() => setShowConfirm(false)} // отмена удаления
+                            >
+                                Отмена
+                            </Button>
+
+                            <Button
+                                variant="danger"
+                                onClick={() => {
+                                    setShowConfirm(false); // закрыть модалку
+                                    onDelete?.(task!.id); // выполнить удаление
+                                }}
+                            >
+                                Удалить
+                            </Button>
+                        </div>
+                    </div>
+                </Modal>
             )}
         </Modal>
     );

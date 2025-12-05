@@ -5,9 +5,11 @@ import { Loader } from '../minimal_test/ui/Loader';
 import { userService } from '../minimal_test/api/userService';
 import type { User } from '../minimal_test/types';
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 interface UserSearchProps {
     onSelect: (user: User) => void;  // вызываем при выборе пользователя
-    excludeIds?: string[]; // поль-ли, которых нельзя использовать
+    excludeIds?: string[]; // пользователи, которых нельзя использовать
 }
 
 export const UserSearch: React.FC<UserSearchProps> = ({ // обновляемся функц. компонент, принимающий пропсы
@@ -44,12 +46,12 @@ export const UserSearch: React.FC<UserSearchProps> = ({ // обновляемс�
             } finally {
                 setLoading(false); // выключаем индикатор загрузки
             }
-        }, 300);
+        }, SEARCH_DEBOUNCE_MS);
 
         return () => {
             if (debounceRef.current) clearTimeout(debounceRef.current); // чистим таймер при смене 
         };
-    }, [query]);
+    }, [query, excludeIds]);
 
     const handleSelect = (user: User) => {
         onSelect(user); // вызываем onSelect(user)
