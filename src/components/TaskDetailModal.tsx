@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Modal } from '../minimal_test/ui/Modal';
-import { Card } from '../minimal_test/ui/Card';
-import { Button } from '../minimal_test/ui/Button';
-import { Loader } from '../minimal_test/ui/Loader';
-import type { Task } from '../minimal_test/types';
+import { Modal } from '../components/ui/Modal';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Loader } from '../components/ui/Loader';
+import type { Task } from '../types';
 
 const formatDate = (date: string | undefined): string => {
     if (!date) return '—';
@@ -54,7 +54,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
             )}
 
             {!loading && task && ( // основные данные задачи
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-4 mt-1">
 
                     <Card title={task.title}>
                         <div>
@@ -77,18 +77,18 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                     <Card title="Сроки">
                         <div className="flex flex-col gap-1">
                             <div>
-                                <strong>Дата начала:</strong> {formatDate(task.startdate)}
+                                <strong>Дата начала:</strong> {formatDate(task.start_date)}
                             </div>
                             <div>
-                                <strong>Дата окончания:</strong> {formatDate(task.enddate)}
+                                <strong>Дата окончания:</strong> {formatDate(task.end_date)}
                             </div>
                             <div>
-                                <strong>Оценка часов:</strong> {task.estimatedhours ?? 0}
+                                <strong>Оценка часов:</strong> {task.estimated_hours ?? 0}
                             </div>
                         </div>
                     </Card>
 
-                    <div className="flex justify-end gap-2 mt-2">
+                    <div className="flex justify-end gap-3 mt-10 pt-6 mb-30 border-t">
                         <Button variant="secondary" onClick={onClose}>
                             Закрыть
                         </Button>

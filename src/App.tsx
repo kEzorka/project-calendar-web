@@ -1,27 +1,16 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import CalendarPage from './pages/CalendarPage';
 
-// Создам позже
-import RegisterPage from './pages/RegisterPage';
-import LoginPage from './pages/LoginPage';
-// import ProjectsPage from './pages/ProjectsPage';
-// import ProjectDetailPage from './pages/ProjectDetailPage';
-
-function App() {
+export default function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        {/* Временно редирект на login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-        {/* Добавлю позже:
-        <Route path="/" element={<ProtectedRoute><ProjectsPage /></ProtectedRoute>} />
-        <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetailPage /></ProtectedRoute>} />
-        */}
+        {/* Открываем календарь по /calendar */}
+        <Route path="/calendar" element={<CalendarPage />} />
+
+        {/* Перенаправляем все маршруты на календарь */}
+        <Route path="*" element={<CalendarPage />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
-
-export default App;
