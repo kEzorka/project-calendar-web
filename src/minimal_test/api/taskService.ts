@@ -30,7 +30,7 @@
  * [MOCK] Get assignments for task: task-1
  */
 
-import type { Task, Assignment } from '../types';
+import type { Task, Assignment } from '../../types';
 
 const mockTasks: Task[] = [
   {
@@ -39,53 +39,53 @@ const mockTasks: Task[] = [
     description: 'Компонент для поиска пользователей с debounce 300ms',
     status: 'completed',
     priority: 'high',
-    startdate: '2025-11-25',
-    enddate: '2025-11-27',
-    estimatedhours: 8,
+    start_date: '2025-11-25',
+    end_date: '2025-11-27',
+    estimated_hours: 8,
   },
   {
     id: 'task-2',
     title: 'Создать TaskDetailModal',
     description: 'Модальное окно для отображения деталей задачи',
-    status: 'in-progress',
+    status: 'in_progress',
     priority: 'high',
-    startdate: '2025-11-26',
-    enddate: '2025-11-28',
-    estimatedhours: 6,
+    start_date: '2025-11-26',
+    end_date: '2025-11-28',
+    estimated_hours: 6,
   },
   {
     id: 'task-3',
     title: 'Настроить тестовое окружение',
     description: 'Подготовить моковые данные и API для тестирования',
-    status: 'not-started',
+    status: 'pending',
     priority: 'medium',
-    startdate: '2025-11-29',
-    enddate: '2025-11-30',
-    estimatedhours: 4,
+    start_date: '2025-11-29',
+    end_date: '2025-11-30',
+    estimated_hours: 4,
   },
 ];
 
 const mockAssignments: Assignment[] = [
   {
     id: 'assign-1',
-    taskid: 'task-1',
-    userid: 'user-1',
+    task_id: 'task-1',
+    user_id: 'user-1',
     role: 'owner',
-    allocatedhours: 8,
+    allocated_hours: 8,
   },
   {
     id: 'assign-2',
-    taskid: 'task-1',
-    userid: 'user-2',
+    task_id: 'task-1',
+    user_id: 'user-2',
     role: 'executor',
-    allocatedhours: 4,
+    allocated_hours: 4,
   },
   {
     id: 'assign-3',
-    taskid: 'task-2',
-    userid: 'user-1',
+    task_id: 'task-2',
+    user_id: 'user-1',
     role: 'owner',
-    allocatedhours: 6,
+    allocated_hours: 6,
   },
 ];
 
@@ -103,6 +103,6 @@ export const taskService = {
     
     await new Promise(resolve => setTimeout(resolve, 200));
     
-    return mockAssignments.filter(a => a.taskid === taskId);
+    return mockAssignments.filter(a => a.task_id === taskId);
   },
 };

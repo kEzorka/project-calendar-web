@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TaskDetailModal } from '../components/TaskDetailModal';
-import type { Task } from '../minimal_test/types';
+import type { Task } from '../types';
 
 export const TestPage: React.FC = () => {
     const [open, setOpen] = useState(false);
@@ -10,11 +10,11 @@ export const TestPage: React.FC = () => {
         id: "123",
         title: "Сделать API авторизации",
         description: "Создать эндпоинты login/register/me",
-        status: "in-progress",
+        status: "in_progress",
         priority: "high",
-        startdate: "2025-12-01",
-        enddate: "2025-12-10",
-        estimatedhours: 14,
+        start_date: "2025-12-01",
+        end_date: "2025-12-10",
+        estimated_hours: 14,
     };
 
     const openWithLoading = () => {
