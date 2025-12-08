@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Modal } from '../minimal_test/ui/Modal';
-import { Card } from '../minimal_test/ui/Card';
-import { Button } from '../minimal_test/ui/Button';
-import { Loader } from '../minimal_test/ui/Loader';
+import { Modal } from './ui/Modal';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
+import { Loader } from './ui/Loader';
 import type { Task } from '../types'
 
 const formatDate = (date: string | undefined): string => {

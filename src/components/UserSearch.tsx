@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Input } from '../minimal_test/ui/Input';
-import { Card } from '../minimal_test/ui/Card';
-import { Loader } from '../minimal_test/ui/Loader';
+import { Input } from './ui/Input';
+import { Card } from './ui/Card.tsx';
+import { Loader } from './ui/Loader.tsx';
 import { userService } from '../minimal_test/api/userService';
 import type { User } from '../types';
 
@@ -68,7 +68,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({ // обновляемс�
             <Input
                 type="search"
                 value={query}
-                onChange={setQuery}
+                onChange={e => setQuery(e.target.value)}
                 placeholder="Введите имя или email..."
             />
 
