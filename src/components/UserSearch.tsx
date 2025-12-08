@@ -3,7 +3,7 @@ import { Input } from '../minimal_test/ui/Input';
 import { Card } from '../minimal_test/ui/Card';
 import { Loader } from '../minimal_test/ui/Loader';
 import { userService } from '../minimal_test/api/userService';
-import type { User } from '../minimal_test/types';
+import type { User } from '../types';
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -87,7 +87,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({ // обновляемс�
                             onClick={() => handleSelect(user)}
                         >
                             <div className="font-semibold">
-                                {user.fullname ?? user.username ?? 'Неизвестный пользователь'}
+                                {user.full_name ?? user.username ?? 'Неизвестный пользователь'}
                             </div>
                             <div className="text-sm text-gray-600">
                                 {user.email ?? 'Нет email'}

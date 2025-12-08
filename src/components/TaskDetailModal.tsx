@@ -3,7 +3,7 @@ import { Modal } from '../minimal_test/ui/Modal';
 import { Card } from '../minimal_test/ui/Card';
 import { Button } from '../minimal_test/ui/Button';
 import { Loader } from '../minimal_test/ui/Loader';
-import type { Task } from '../minimal_test/types';
+import type { Task } from '../types'
 
 const formatDate = (date: string | undefined): string => {
     if (!date) return '—';
@@ -77,13 +77,13 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                     <Card title="Сроки">
                         <div className="flex flex-col gap-1">
                             <div>
-                                <strong>Дата начала:</strong> {formatDate(task.startdate)}
+                                <strong>Дата начала:</strong> {formatDate(task.start_date)}
                             </div>
                             <div>
-                                <strong>Дата окончания:</strong> {formatDate(task.enddate)}
+                                <strong>Дата окончания:</strong> {formatDate(task.end_date)}
                             </div>
                             <div>
-                                <strong>Оценка часов:</strong> {task.estimatedhours ?? 0}
+                                <strong>Оценка часов:</strong> {task.estimated_hours ?? 0}
                             </div>
                         </div>
                     </Card>
