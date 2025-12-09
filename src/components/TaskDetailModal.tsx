@@ -11,23 +11,23 @@ const formatDate = (date: string | undefined): string => {
         return new Date(date).toLocaleDateString('ru-RU', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
         });
     } catch {
         return date;
     }
 };
 
-interface TaskDetailModalProps { // входные пропсы
-    task: Task | null; // объект задачи
-    isOpen: boolean; // нужно ли показывать модалку
-    loading?: boolean; // флаг загрузки
-    onClose: () => void; // закрытие модалки
-    onEdit?: (taskId: string) => void; // кнопка редактировать
-    onDelete?: (taskId: string) => void; // кнопка удалить
+interface TaskDetailModalProps {
+    task: Task | null;
+    isOpen: boolean;
+    loading?: boolean;
+    onClose: () => void;
+    onEdit?: (taskId: string) => void;
+    onDelete?: (taskId: string) => void;
 }
 
-export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // деструктурируем входящие пропсы
+export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
     task,
     isOpen,
     loading = false,
@@ -35,9 +35,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
     onEdit,
     onDelete,
 }) => {
-    if (!isOpen) return null; // если модалка закрыта, то ничего не рисуем
+    const [showConfirm, setShowConfirm] = useState(false);
 
-    const [showConfirm, setShowConfirm] = useState(false); // локальный стейт для модалки подтверждения
+    if (!isOpen) return null;
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Детали задачи">
@@ -53,9 +53,9 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                 </Card>
             )}
 
-            {!loading && task && ( // основные данные задачи
-                <div className="flex flex-col gap-4 mt-1">
-
+            {!loading && task && (
+                // -mt-6 подтягивает первую карточку ближе к заголовку модалки
+                <div className="flex flex-col gap-4 -mt-6">
                     <Card title={task.title}>
                         <div>
                             <strong>Описание:</strong>{' '}
@@ -77,26 +77,40 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                     <Card title="Сроки">
                         <div className="flex flex-col gap-1">
                             <div>
-                                <strong>Дата начала:</strong> {formatDate(task.start_date)}
+                                <strong>Дата начала:</strong>{' '}
+                                {formatDate(task.start_date)}
                             </div>
                             <div>
-                                <strong>Дата окончания:</strong> {formatDate(task.end_date)}
+                                <strong>Дата окончания:</strong>{' '}
+                                {formatDate(task.end_date)}
                             </div>
                             <div>
-                                <strong>Оценка часов:</strong> {task.estimated_hours ?? 0}
+                                <strong>Оценка часов:</strong>{' '}
+                                {task.estimated_hours ?? 0}
                             </div>
                         </div>
                     </Card>
 
-                    <div className="flex justify-end gap-3 mt-10 pt-6 mb-30 border-t">
-                        <Button variant="secondary" onClick={onClose}>
-                            Закрыть
-                        </Button>
-
+                    {/* Кнопки снизу основной модалки */}
+                    <div
+                        style={{
+                            marginTop: '16px',
+                            paddingTop: '12px',
+                            borderTop: '1px solid #e5e7eb',
+                            display: 'flex',
+                            justifyContent: 'flex-start',
+                            columnGap: '12px', // маленький зазор между кнопками
+                        }}
+                    >
                         {onEdit && (
                             <Button
                                 variant="primary"
-                                onClick={() => onEdit(task.id)}
+                                onClick={() => {
+                                    // на всякий случай ещё раз проверяем task
+                                    if (task) {
+                                        onEdit(task.id);
+                                    }
+                                }}
                             >
                                 Редактировать
                             </Button>
@@ -105,7 +119,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                         {onDelete && (
                             <Button
                                 variant="danger"
-                                onClick={() => setShowConfirm(true)} // вместо confirm() открываем кастомную модалку
+                                onClick={() => setShowConfirm(true)}
                             >
                                 Удалить
                             </Button>
@@ -117,16 +131,27 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
             {showConfirm && (
                 <Modal
                     isOpen={showConfirm}
-                    onClose={() => setShowConfirm(false)} // закрыть модалку
+                    onClose={() => setShowConfirm(false)}
                     title="Подтверждение удаления"
                 >
                     <div className="flex flex-col gap-4">
-                        <p>Вы уверены, что хотите удалить эту задачу? Это действие необратимо.</p>
+                        <p>
+                            Вы уверены, что хотите удалить эту задачу? Это
+                            действие необратимо.
+                        </p>
 
-                        <div className="flex justify-end gap-2">
+                        {/* Кнопки в модалке подтверждения */}
+                        <div
+                            style={{
+                                marginTop: '12px',
+                                display: 'flex',
+                                justifyContent: 'flex-start',
+                                columnGap: '12px',
+                            }}
+                        >
                             <Button
                                 variant="secondary"
-                                onClick={() => setShowConfirm(false)} // отмена удаления
+                                onClick={() => setShowConfirm(false)}
                             >
                                 Отмена
                             </Button>
@@ -135,8 +160,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({ // дестр�
                                 variant="danger"
                                 onClick={() => {
                                     if (task) {
-                                        setShowConfirm(false); // закрыть модалку
-                                        onDelete?.(task.id); // выполнить удаление
+                                        setShowConfirm(false);
+                                        onDelete?.(task.id);
                                     }
                                 }}
                             >

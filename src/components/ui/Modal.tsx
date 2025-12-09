@@ -9,6 +9,19 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg';
 }
 
+const getContentPadding = (size: 'sm' | 'md' | 'lg') => {
+  // ещё меньше расстояние между хедером и контентом
+  switch (size) {
+    case 'sm':
+      return '6px 20px 18px';
+    case 'lg':
+      return '6px 32px 24px';
+    case 'md':
+    default:
+      return '6px 24px 20px';
+  }
+};
+
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
@@ -48,7 +61,13 @@ export const Modal: React.FC<ModalProps> = ({
             &times;
           </button>
         </div>
-        <div className="modal__content">{children}</div>
+
+        <div
+          className="modal__content"
+          style={{ padding: getContentPadding(size) }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
