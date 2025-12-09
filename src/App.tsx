@@ -1,16 +1,13 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import CalendarPage from './pages/CalendarPage';
+// src/App.tsx
+import React from 'react';
+import { ProfilePage } from './pages/ProfilePage';
 
-export default function App() {
+const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Открываем календарь по /calendar */}
-        <Route path="/calendar" element={<CalendarPage />} />
-
-        {/* Перенаправляем все маршруты на календарь */}
-        <Route path="*" element={<CalendarPage />} />
-      </Routes>
-    </Router>
+    <div className="app-root">
+      <ProfilePage />
+    </div>
   );
-}
+};
+
+export default App;
