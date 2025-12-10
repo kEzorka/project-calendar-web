@@ -1,0 +1,99 @@
+@import '../styles/variables.scss';
+
+.task-tree {
+  &__empty {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    padding: $spacing-4;
+    text-align: center;
+  }
+
+  &__selected {
+    margin-top: $spacing-6;
+    padding: $spacing-4;
+    background-color: $grey-100;
+    border-radius: $radius-md;
+    font-size: $font-size-sm;
+  }
+}
+
+.task-node {
+  margin-bottom: $spacing-2;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+    padding: $spacing-2 $spacing-3;
+    background-color: white;
+    border-radius: $radius-sm;
+    transition: background-color $transition-base;
+
+    &:hover {
+      background-color: $grey-100;
+    }
+  }
+
+  &__expand {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: $font-size-sm;
+    padding: 0;
+    width: 20px;
+    text-align: center;
+    transition: transform $transition-base;
+    color: $text-secondary;
+
+    &--open {
+      transform: rotate(90deg);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    flex: 1;
+    cursor: pointer;
+  }
+
+  &__title {
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+    flex: 1;
+  }
+
+  &__status {
+    background-color: $grey-200;
+    color: $text-primary;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+  }
+
+  &__priority {
+    color: white;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+  }
+
+  &__children {
+    margin-top: $spacing-2;
+  }
+
+  &__empty {
+    margin-left: 40px;
+    color: $text-disabled;
+    font-size: $font-size-sm;
+    padding: $spacing-2;
+  }
+}
