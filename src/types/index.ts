@@ -52,5 +52,13 @@ export interface Assignment {
   task_id: string;
   user_id: string;
   role: 'owner' | 'supervisor' | 'executor' | 'hybrid' | 'spectator';
+  allocated_hours: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface AssignmentData {
+  user_id: string;
+  role: 'owner' | 'supervisor' | 'executor' | 'hybrid' | 'spectator';
   allocated_hours?: number;
 }

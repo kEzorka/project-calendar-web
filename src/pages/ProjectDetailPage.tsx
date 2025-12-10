@@ -5,6 +5,7 @@ import { Modal } from '../components/ui/Modal';
 import { Loader } from '../components/ui/Loader';
 import { TaskForm } from '../components/TaskForm';
 import { TaskTree } from '../components/TaskTree';
+import { AssignmentManager } from '../components/AssignmentManager';
 import { taskService } from '../api/taskService';
 import type { Task } from '../types';
 import './ProjectDetailPage.scss';
@@ -104,6 +105,11 @@ const ProjectDetailPage: React.FC = () => {
       <div className="project-detail-page__tasks">
         <h2>Задачи</h2>
         {id && <TaskTree taskId={id} />}
+      </div>
+
+      <div className="project-detail-page__assignments">
+        <h2>Участники</h2>
+        {id && <AssignmentManager taskId={id} />}
       </div>
 
       <Modal

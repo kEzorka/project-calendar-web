@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { Layout } from './Layout';
 import { authService } from '../api/authService';
 
 interface ProtectedRouteProps {
@@ -13,8 +14,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // без Layout
-  return <>{children}</>;
+  return <Layout>{children}</Layout>;
 };
 
 export default ProtectedRoute;
