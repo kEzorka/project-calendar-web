@@ -1,0 +1,31 @@
+@import '../styles/variables';
+@import '../styles/mixins';
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__main {
+    flex: 1;
+    padding: $spacing-6;
+    background-color: $background;
+
+    @include mobile {
+      padding: $spacing-4;
+    }
+  }
+
+  &__footer {
+    background-color: $grey-100;
+    border-top: 1px solid $grey-200;
+    padding: $spacing-4;
+    text-align: center;
+    color: $text-secondary;
+    font-size: $font-size-sm;
+
+    p {
+      margin: 0;
+    }
+  }
+}
