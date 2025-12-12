@@ -37,18 +37,17 @@ export const AssignmentManager: React.FC<AssignmentManagerProps> = ({ taskId }) 
   });
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadAssignments();
-  }, [taskId]);
-
-  const loadAssignments = async () => {
+  const loadAssignments = React.useCallback(async () => {
     try {
       const data = await assignmentService.getAssignments(taskId);
       setAssignments(data);
     } catch (err) {
       console.error('Ошибка при загрузке назначений:', err);
     }
-  };
+  }, [taskId]);
+  useEffect(() => {
+    loadAssignments();
+  }, [loadAssignments]);
 
   const handleAssignUser = async (e: React.FormEvent) => {
     e.preventDefault();
