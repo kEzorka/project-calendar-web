@@ -1,9 +1,39 @@
 import { useState, useEffect, useRef } from 'react';
 import { Input } from './ui/Input';
-import { Card } from './ui/Card.tsx';
-import { Loader } from './ui/Loader.tsx';
-import { userService } from '../minimal_test/api/userService';
+import { Card } from './ui/Card';
+import { Loader } from './ui/Loader';
 import type { User } from '../types';
+
+const MOCK_USERS: User[] = [
+  {
+    id: '1',
+    username: 'woroncov',
+    email: 'woroncov@example.com',
+    full_name: 'Иванов Иван',
+    timezone: 'Europe/Moscow',
+  },
+  {
+    id: '2',
+    username: 'eagle',
+    email: 'eagle@example.com',
+    full_name: 'Петров Петр',
+    timezone: 'Europe/Moscow',
+  },
+  {
+    id: '3',
+    username: 'whitewolf',
+    email: 'whitewolf@example.com',
+    full_name: 'Сидоров Сидор',
+    timezone: 'Europe/Moscow',
+  },
+  {
+    id: '4',
+    username: 'striker',
+    email: 'striker@example.com',
+    full_name: 'Алексеев Алексей',
+    timezone: 'Europe/Moscow',
+  },
+];
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -34,7 +64,13 @@ export const UserSearch: React.FC<UserSearchProps> = ({ onSelect, excludeIds = [
         setLoading(true);
         setError(null);
 
-        const results = await userService.searchUsers(query);
+        const lowerQuery = query.toLowerCase();
+        const results = MOCK_USERS.filter(
+          (u) =>
+            u.username.toLowerCase().includes(lowerQuery) ||
+            u.email.toLowerCase().includes(lowerQuery) ||
+            u.full_name.toLowerCase().includes(lowerQuery),
+        );
         const filtered = results.filter((u) => !excludeIds.includes(u.id));
 
         setUsers(filtered);
@@ -78,9 +114,9 @@ export const UserSearch: React.FC<UserSearchProps> = ({ onSelect, excludeIds = [
           {users.map((user) => (
             <Card key={user.id} hoverable onClick={() => handleSelect(user)}>
               <div className="font-semibold">
-                {user.full_name ?? user.username ?? 'Неизвестный пользователь'}
+                {user.full_name || user.username || 'Неизвестный пользователь'}
               </div>
-              <div className="text-sm text-gray-600">{user.email ?? 'Нет email'}</div>
+              <div className="text-sm text-gray-600">{user.email || 'Нет email'}</div>
             </Card>
           ))}
         </div>

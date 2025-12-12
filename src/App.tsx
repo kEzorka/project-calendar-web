@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -5,19 +6,9 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
+import CalendarPage from './pages/CalendarPage'; // ДОБАВЬ Саминов
+import { ProfilePage } from './pages/ProfilePage'; // ДОБАВЬ Саминов
 import ProtectedRoute from './components/ProtectedRoute';
-
-// Временные заглушки для CalendarPage и ProfilePage (Самина)
-const CalendarPage = () => (
-  <div style={{ padding: '2rem' }}>
-    <h1>📅 Календарь (в разработке Саминой)</h1>
-  </div>
-);
-const ProfilePage = () => (
-  <div style={{ padding: '2rem' }}>
-    <h1>👤 Профиль (в разработке Саминой)</h1>
-  </div>
-);
 
 function App() {
   return (
@@ -42,6 +33,25 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <CalendarPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

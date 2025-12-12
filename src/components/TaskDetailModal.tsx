@@ -38,6 +38,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const [showConfirm, setShowConfirm] = useState(false);
 
   if (!isOpen) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Детали задачи">
       {loading && (
@@ -53,7 +54,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
       )}
 
       {!loading && task && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 -mt-6">
           <Card title={task.title}>
             <div>
               <strong>Описание:</strong> {task.description || '—'}
@@ -85,13 +86,25 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
             </div>
           </Card>
 
-          <div className="flex justify-end gap-2 mt-2">
-            <Button variant="secondary" onClick={onClose}>
-              Закрыть
-            </Button>
-
+          <div
+            style={{
+              marginTop: '16px',
+              paddingTop: '12px',
+              borderTop: '1px solid #e5e7eb',
+              display: 'flex',
+              justifyContent: 'flex-start',
+              columnGap: '12px',
+            }}
+          >
             {onEdit && (
-              <Button variant="primary" onClick={() => onEdit(task.id)}>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (task) {
+                    onEdit(task.id);
+                  }
+                }}
+              >
                 Редактировать
               </Button>
             )}
@@ -114,7 +127,14 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           <div className="flex flex-col gap-4">
             <p>Вы уверены, что хотите удалить эту задачу? Это действие необратимо.</p>
 
-            <div className="flex justify-end gap-2">
+            <div
+              style={{
+                marginTop: '12px',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                columnGap: '12px',
+              }}
+            >
               <Button variant="secondary" onClick={() => setShowConfirm(false)}>
                 Отмена
               </Button>

@@ -1,0 +1,24 @@
+:global {
+  .rbc-toolbar {
+    button {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+
+      &:hover {
+        background-color: #f3f4f6;
+      }
+    }
+  }
+}
+
+.error-card {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  p {
+    margin: 0;
+  }
+}

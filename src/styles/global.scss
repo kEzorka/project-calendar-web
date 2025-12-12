@@ -196,3 +196,44 @@ em {
 .text-secondary {
   color: $text-secondary;
 }
+
+.rbc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+
+  button {
+    color: inherit;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 5px 10px;
+    text-align: center;
+    cursor: pointer;
+    margin: 0 0.5em;
+    border-radius: 4px;
+    pointer-events: auto !important;
+
+    &:active,
+    &:focus {
+      outline: none;
+      background-color: #e6e6e6;
+      color: inherit;
+    }
+
+    &.rbc-active {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    &:hover:not(.rbc-active) {
+      background-color: #f0f0f0;
+    }
+  }
+
+  label {
+    margin: 0 0.5em;
+  }
+}
