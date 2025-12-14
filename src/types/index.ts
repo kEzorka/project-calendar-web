@@ -29,7 +29,7 @@ export interface WorkScheduleDay {
 
 export interface Task {
   id: string;
-  parent_task_id?: string | null;
+  parent_task_id: string | null;
   title: string;
   description?: string;
   status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
@@ -41,12 +41,6 @@ export interface Task {
   updated_at?: string;
 }
 
-export interface TasksQueryParams {
-  parent_task_id?: string | null;
-  status?: string;
-  priority?: string;
-}
-
 export interface Assignment {
   id: string;
   task_id: string;
@@ -55,6 +49,20 @@ export interface Assignment {
   allocated_hours: number;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: Task;
+}
+
+export interface TasksQueryParams {
+  parent_task_id?: string | null;
+  status?: string;
+  priority?: string;
 }
 
 export interface AssignmentData {

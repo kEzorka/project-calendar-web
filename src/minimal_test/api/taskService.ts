@@ -35,6 +35,7 @@ import type { Task, Assignment } from '../../types';
 const mockTasks: Task[] = [
   {
     id: 'task-1',
+    parent_task_id: null,
     title: 'Реализовать UserSearch компонент',
     description: 'Компонент для поиска пользователей с debounce 300ms',
     status: 'completed',
@@ -45,6 +46,7 @@ const mockTasks: Task[] = [
   },
   {
     id: 'task-2',
+    parent_task_id: null,
     title: 'Создать TaskDetailModal',
     description: 'Модальное окно для отображения деталей задачи',
     status: 'in_progress',
@@ -55,6 +57,7 @@ const mockTasks: Task[] = [
   },
   {
     id: 'task-3',
+    parent_task_id: null,
     title: 'Настроить тестовое окружение',
     description: 'Подготовить моковые данные и API для тестирования',
     status: 'pending',

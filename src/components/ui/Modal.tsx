@@ -10,7 +10,6 @@ interface ModalProps {
 }
 
 const getContentPadding = (size: 'sm' | 'md' | 'lg') => {
-  // Возвращает значение padding для контента модалки в зависимости от размера
   switch (size) {
     case 'sm':
       return '6px 20px 18px';
@@ -22,13 +21,7 @@ const getContentPadding = (size: 'sm' | 'md' | 'lg') => {
   }
 };
 
-export const Modal: React.FC<ModalProps> = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  size = 'md',
-}) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'md' }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -51,10 +44,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div
-        className={`modal modal--${size}`}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={`modal modal--${size}`} onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
           {title && <h2 className="modal__title">{title}</h2>}
           <button className="modal__close" onClick={onClose}>
@@ -62,13 +52,12 @@ export const Modal: React.FC<ModalProps> = ({
           </button>
         </div>
 
-        <div
-          className="modal__content"
-          style={{ padding: getContentPadding(size) }}
-        >
+        <div className="modal__content" style={{ padding: getContentPadding(size) }}>
           {children}
         </div>
       </div>
     </div>
   );
 };
+
+export default Modal;

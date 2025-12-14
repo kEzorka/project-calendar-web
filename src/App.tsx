@@ -1,10 +1,11 @@
-import React from 'react';
+// src/App.tsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ProfilePage } from './pages/ProfilePage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
+import CalendarPage from './pages/CalendarPage';
+import { ProfilePage } from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 const App: React.FC = () => {
@@ -27,6 +28,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <ProjectDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <CalendarPage />
             </ProtectedRoute>
           }
         />

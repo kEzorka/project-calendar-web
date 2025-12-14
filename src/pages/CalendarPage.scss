@@ -1,17 +1,24 @@
-.calendar-page {
-    padding: 24px;
+:global {
+  .rbc-toolbar {
+    button {
+      pointer-events: auto !important;
+      cursor: pointer !important;
 
-    &__title {
-        margin-bottom: 16px;
+      &:hover {
+        background-color: #f3f4f6;
+      }
     }
+  }
+}
 
-    &__loader {
-        display: flex;
-        justify-content: center;
-        padding: 20px;
-    }
+.error-card {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 
-    &__error {
-        color: var(--color-danger, #d32f2f);
-    }
+  p {
+    margin: 0;
+  }
 }

@@ -6,128 +6,151 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import type { CalendarEvent, Task } from '../types';
 
-const locales = { ru };
+const customRuLocale = {
+  ...ru,
+  localize: {
+    ...ru.localize,
+    day: (day: number, options?: any) => {
+      const days = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+      if (options?.width === 'abbreviated') {
+        return days[day];
+      }
+      return days[day] || '';
+    },
+  },
+};
+
+const locales = { ru: customRuLocale };
 
 const localizer = dateFnsLocalizer({
-    format,
-    parse,
-    startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
-    getDay,
-    locales,
+  format,
+  parse,
+  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }),
+  getDay,
+  locales,
 });
 
 const priorityColors: Record<string, string> = {
-    low: '#82c7a5',
-    medium: '#6fa8dc',
-    high: '#f6b26b',
-    critical: '#e06666',
+  low: '#82c7a5',
+  medium: '#6fa8dc',
+  high: '#f6b26b',
+  critical: '#e06666',
 };
 
+const weekDays = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+const monthNames = [
+  'января',
+  'февраля',
+  'марта',
+  'апреля',
+  'мая',
+  'июня',
+  'июля',
+  'августа',
+  'сентября',
+  'октября',
+  'ноября',
+  'декабря',
+];
+const monthNamesCapital = [
+  'Январь',
+  'Февраль',
+  'Март',
+  'Апрель',
+  'Май',
+  'Июнь',
+  'Июль',
+  'Август',
+  'Сентябрь',
+  'Октябрь',
+  'Ноябрь',
+  'Декабрь',
+];
+
 interface CalendarViewProps {
-    events: CalendarEvent[];
-    onSelectEvent?: (e: CalendarEvent) => void;
-    onRangeChange?: (range: Date[] | { start: Date; end: Date }) => void;
+  events: CalendarEvent[];
+  onSelectEvent?: (e: CalendarEvent) => void;
+  onRangeChange?: (range: any) => void;
 }
 
-export const CalendarView = ({
-    events,
-    onSelectEvent,
-    onRangeChange,
-}: CalendarViewProps) => {
+export const CalendarView = ({ events, onSelectEvent }: CalendarViewProps) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month');
 
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month');
+  const eventStyleGetter = (event: CalendarEvent) => {
+    const task: Task | undefined = event.resource;
+    const bg =
+      task?.priority && priorityColors[task.priority]
+        ? priorityColors[task.priority]
+        : priorityColors.medium;
 
-    // --- Стилизация событий ---
-    const eventStyleGetter = (event: CalendarEvent) => {
-        const task: Task | undefined = event.resource;
-        const bg =
-            task?.priority && priorityColors[task.priority]
-                ? priorityColors[task.priority]
-                : priorityColors.medium;
-
-        return {
-            style: {
-                backgroundColor: bg,
-                color: 'white',
-                borderRadius: '6px',
-                padding: '4px 6px',
-                border: 'none',
-                fontSize: '14px',
-            },
-        };
+    return {
+      style: {
+        backgroundColor: bg,
+        color: 'white',
+        borderRadius: '6px',
+        padding: '4px 6px',
+        border: 'none',
+        fontSize: '14px',
+      },
     };
+  };
 
-    return (
-        <div style={{ height: '80vh', width: '100%' }}>
-            <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
+  const handleViewChange = (view: 'month' | 'week' | 'day') => {
+    setCurrentView(view);
+  };
 
-                date={currentDate}
-                view={currentView}
-                onView={(v: 'month' | 'week' | 'day') => setCurrentView(v as 'month' | 'week' | 'day')}
+  const handleNavigate = (newDate: Date) => {
+    setCurrentDate(newDate);
+  };
 
-                onNavigate={(newDate: Date) => {
-                    setCurrentDate(newDate);
-                }}
+  return (
+    <div style={{ height: '80vh', width: '100%' }}>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: '100%' }}
+        date={currentDate}
+        view={currentView}
+        onView={handleViewChange}
+        onNavigate={handleNavigate}
+        onSelectEvent={onSelectEvent}
+        eventPropGetter={eventStyleGetter}
+        views={['month', 'week', 'day']}
+        culture="ru"
+        popup
+        formats={{
+          weekdayFormat: (date: Date) => {
+            return weekDays[date.getDay()];
+          },
 
-                onRangeChange={(range: unknown) => {
-                    if (!onRangeChange) return;
+          monthHeaderFormat: (date: Date) => {
+            return `${monthNamesCapital[date.getMonth()]} ${date.getFullYear()}`;
+          },
 
-                    if (Array.isArray(range)) {
-                        onRangeChange(range);
-                    } else if (
-                        range &&
-                        typeof range === 'object' &&
-                        'start' in range &&
-                        'end' in range
-                    ) {
-                        onRangeChange(range as { start: Date; end: Date });
-                    }
-                }}
+          dayHeaderFormat: (date: Date) => {
+            return `${date.getDate()} ${monthNames[date.getMonth()]}`;
+          },
 
-                onSelectEvent={onSelectEvent}
-                eventPropGetter={eventStyleGetter}
-
-                views={{
-                    month: true,
-                    week: true,
-                    day: true,
-                }}
-
-                culture="ru"
-                popup
-
-                formats={{
-                    monthHeaderFormat: (date: Date, culture: string | undefined, loc: any) =>
-                        loc
-                            .format(date, 'LLLL yyyy', culture)
-                            .replace(/^./, (c: string) => c.toUpperCase()),
-
-                    dayHeaderFormat: (date: Date, culture: string | undefined, loc: any) =>
-                        loc.format(date, 'd LLLL', culture),
-
-                    dayRangeHeaderFormat: (
-                        { start, end }: { start: Date; end: Date },
-                        culture: string | undefined,
-                        loc: any
-                    ) =>
-                        `${loc.format(start, 'd LLLL', culture)} — ${loc.format(end, 'd LLLL yyyy', culture)}`,
-                }}
-
-                messages={{
-                    next: 'След.',
-                    previous: 'Назад',
-                    today: 'Сегодня',
-                    month: 'Месяц',
-                    week: 'Неделя',
-                    day: 'День',
-                    showMore: (count: number) => `+${count} ещё`,
-                }}
-            />
-        </div>
-    );
+          dayRangeHeaderFormat: ({ start, end }: { start: Date; end: Date }) => {
+            if (start.getMonth() === end.getMonth()) {
+              return `${start.getDate()}–${end.getDate()} ${monthNames[start.getMonth()]} ${start.getFullYear()}`;
+            }
+            return `${start.getDate()} ${monthNames[start.getMonth()]}–${end.getDate()} ${monthNames[end.getMonth()]} ${start.getFullYear()}`;
+          },
+        }}
+        messages={{
+          next: '→',
+          previous: '←',
+          today: 'Сегодня',
+          month: 'Месяц',
+          week: 'Неделя',
+          day: 'День',
+          showMore: (count: number) => `+${count} ещё`,
+        }}
+      />
+    </div>
+  );
 };
