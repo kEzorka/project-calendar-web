@@ -1,0 +1,80 @@
+@use 'sass:color';
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+.assignment-manager {
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-4;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-3;
+    background-color: $grey-100;
+    border-radius: $radius-md;
+  }
+
+  &__info {
+    display: flex;
+    align-items: center;
+    gap: $spacing-3;
+  }
+
+  &__user {
+    font-weight: $font-weight-medium;
+    color: $text-primary;
+  }
+
+  &__role {
+    background-color: $primary;
+    color: white;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-xs;
+  }
+
+  &__hours {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+  }
+
+  &__empty {
+    text-align: center;
+    color: $text-secondary;
+    padding: $spacing-4;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-3;
+  }
+
+  &__error {
+    background-color: color.scale($danger, $lightness: 80%);
+    color: $danger;
+    padding: $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+  }
+}

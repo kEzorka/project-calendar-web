@@ -1,0 +1,113 @@
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  border-bottom: 1px solid $grey-200;
+  box-shadow: $shadow-sm;
+  z-index: 100;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-4 $spacing-6;
+    max-width: 1280px;
+    margin: 0 auto;
+
+    @include mobile {
+      padding: $spacing-3;
+    }
+  }
+
+  &__logo {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: $primary;
+
+    a {
+      color: $primary;
+      text-decoration: none;
+
+      &:hover {
+        color: $primary-dark;
+      }
+    }
+  }
+
+  &__nav {
+    display: flex;
+    gap: $spacing-6;
+
+    @include mobile {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      background-color: white;
+      border-bottom: 1px solid $grey-200;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height $transition-base;
+
+      &--open {
+        max-height: 300px;
+      }
+    }
+  }
+
+  &__link {
+    color: $text-primary;
+    text-decoration: none;
+    font-weight: $font-weight-medium;
+    transition: color $transition-base;
+    padding: $spacing-2 0;
+
+    @include mobile {
+      display: block;
+      padding: $spacing-3 $spacing-4;
+      border-bottom: 1px solid $grey-100;
+    }
+
+    &:hover {
+      color: $primary;
+    }
+
+    &--active {
+      color: $primary;
+      border-bottom: 2px solid $primary;
+
+      @include mobile {
+        background-color: $grey-100;
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+
+    @include mobile {
+      gap: $spacing-2;
+    }
+  }
+
+  &__hamburger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: $font-size-lg;
+    cursor: pointer;
+    color: $text-primary;
+
+    @include mobile {
+      display: block;
+    }
+  }
+}

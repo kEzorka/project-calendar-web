@@ -1,4 +1,4 @@
-@import '../styles/variables.scss';
+@use '../styles/variables' as *;
 
 .login-page {
   min-height: 100vh;
@@ -35,7 +35,7 @@
   }
 
   &__error {
-    background-color: lighten($danger, 40%);
+    background-color: $danger-light;
     color: $danger;
     padding: $spacing-3;
     border-radius: $radius-md;

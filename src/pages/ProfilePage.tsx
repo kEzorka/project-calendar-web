@@ -167,7 +167,7 @@ export const ProfilePage: React.FC = () => {
             <div className="profile-page__layout">
                 {/* Боковая панель с профилем пользователя */}
                 <aside className="profile-page__sidebar">
-               ф     {user && (
+                    {user && (
                         <div
                             className="profile-page__user"
                             aria-label={user.full_name || user.username}

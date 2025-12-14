@@ -24,38 +24,43 @@
  * [MOCK] Searching users with query: "query"
  */
 
-import type { User } from '../types';
+import type { User } from '../../types';
 
 const mockUsers: User[] = [
   {
     id: 'user-1',
     username: 'impelix',
     email: 'impelix@pumpelix.love',
-    fullname: 'Антон Импеликс',
+    full_name: 'Антон Импеликс',
+    timezone: 'Europe/Moscow',
   },
   {
     id: 'user-2',
     username: 'genorto',
     email: 'wildberries-manger@dubai.com',
-    fullname: 'Глеб Генорто',
+    full_name: 'Глеб Генорто',
+    timezone: 'Europe/Moscow',
   },
   {
     id: 'user-3',
     username: 'kEzorka',
     email: 'kezorka@polyana.opushka',
-    fullname: 'Костя Кезорка',
+    full_name: 'Костя Кезорка',
+    timezone: 'Europe/Moscow',
   },
   {
     id: 'user-4',
     username: 'poil05',
     email: 'titlha@brdlha.mephi',
-    fullname: 'Леша Титлха',
+    full_name: 'Леша Титлха',
+    timezone: 'Europe/Moscow',
   },
   {
     id: 'user-5',
     username: 'kis-kis',
     email: 'baby@cute.love',
-    fullname: 'Федор Ноувей',
+    full_name: 'Федор Ноувей',
+    timezone: 'Europe/Moscow',
   },
 ];
 
@@ -73,7 +78,7 @@ export const userService = {
     const results = mockUsers.filter(user => 
       user.username.toLowerCase().includes(lowerQuery) ||
       user.email.toLowerCase().includes(lowerQuery) ||
-      user.fullname.toLowerCase().includes(lowerQuery)
+      user.full_name.toLowerCase().includes(lowerQuery)
     );
     
     console.log('[MOCK] Found users:', results.length);

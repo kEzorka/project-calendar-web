@@ -1,0 +1,97 @@
+@use 'sass:color';
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+
+.project-detail-page {
+  padding: $spacing-8;
+
+  &__breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: $spacing-2;
+    margin-bottom: $spacing-6;
+    font-size: $font-size-sm;
+    color: $text-secondary;
+  }
+
+  &__breadcrumb-link {
+    background: none;
+    border: none;
+    color: $primary;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color $transition-base;
+
+    &:hover {
+      color: $primary-dark;
+    }
+  }
+
+  &__breadcrumb-separator {
+    color: $text-disabled;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: $spacing-8;
+    gap: $spacing-6;
+
+    @include mobile {
+      flex-direction: column;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+  }
+
+  &__header-content {
+    flex: 1;
+  }
+
+  &__description {
+    color: $text-secondary;
+    margin: $spacing-2 0 $spacing-4 0;
+  }
+
+  &__meta {
+    display: flex;
+    gap: $spacing-3;
+  }
+
+  &__status {
+    background-color: $grey-200;
+    color: $text-primary;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__priority {
+    background-color: $primary;
+    color: white;
+    padding: $spacing-1 $spacing-2;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__error {
+    background-color: color.scale($danger, $lightness: 80%);
+    color: $danger;
+    padding: $spacing-4;
+    border-radius: $radius-md;
+    margin-bottom: $spacing-6;
+  }
+
+  &__tasks {
+    margin-top: $spacing-8;
+
+    h2 {
+      margin-bottom: $spacing-4;
+    }
+  }
+}
