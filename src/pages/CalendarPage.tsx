@@ -55,8 +55,8 @@ export default function CalendarPage() {
       setLoading(true);
       setError(null);
 
-      const start_date = start.toISOString().split('T')[0];
-      const end_date = end.toISOString().split('T')[0];
+      // const start_date = start.toISOString().split('T')[0];
+      // const end_date = end.toISOString().split('T')[0];
 
       // TODO: когда бэк будет, раскомментить
       // const response = await apiClient.get('/calendar/tasks', {

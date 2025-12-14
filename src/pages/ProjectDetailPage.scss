@@ -1,5 +1,6 @@
-@import '../styles/variables';
-@import '../styles/mixins';
+@use 'sass:color';
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
 
 .project-detail-page {
   padding: $spacing-8;
@@ -79,7 +80,7 @@
   }
 
   &__error {
-    background-color: lighten($danger, 40%);
+    background-color: color.scale($danger, $lightness: 80%);
     color: $danger;
     padding: $spacing-4;
     border-radius: $radius-md;

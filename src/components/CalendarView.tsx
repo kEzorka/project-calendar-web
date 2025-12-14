@@ -73,7 +73,7 @@ interface CalendarViewProps {
   onRangeChange?: (range: any) => void;
 }
 
-export const CalendarView = ({ events, onSelectEvent, onRangeChange }: CalendarViewProps) => {
+export const CalendarView = ({ events, onSelectEvent }: CalendarViewProps) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<'month' | 'week' | 'day'>('month');
 

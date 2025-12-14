@@ -9,7 +9,6 @@ interface TaskFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
   task?: Task;
-  isProject?: boolean;
 }
 
 const PRIORITY_OPTIONS = [
@@ -30,7 +29,6 @@ export const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit,
   onCancel,
   task,
-  isProject = false,
 }) => {
   const [formData, setFormData] = useState({
     title: task?.title || '',

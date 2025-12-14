@@ -10,6 +10,7 @@ export const TestPage: React.FC = () => {
 
     const mockTask: Task = {
         id: "123",
+        parent_task_id: null,
         title: "Сделать API авторизации",
         description: "Создать эндпоинты login/register/me",
         status: "in_progress",
