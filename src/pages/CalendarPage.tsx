@@ -10,6 +10,8 @@ import { apiClient } from '../api/client';
 import type { CalendarEvent, Task } from '../types';
 import { USE_MOCK } from '../mock';
 
+import './CalendarPage.scss';
+
 export default function CalendarPage() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [loading, setLoading] = useState(false);
@@ -18,39 +20,8 @@ export default function CalendarPage() {
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
 
-    // const loadEvents = useCallback(async (start: Date, end: Date) => {
-    //     try {
-    //         setLoading(true);
-    //         setError(null);
-
-    //         const start_date = start.toISOString().split('T')[0];
-    //         const end_date = end.toISOString().split('T')[0];
-
-    //         const response = await apiClient.get('/calendar/tasks', {
-    //             params: { start_date, end_date },
-    //         });
-
-    //         const raw = response.data;
-
-    //         const mapped: CalendarEvent[] = raw.map((t: any) => ({
-    //             id: t.task_id,
-    //             title: t.title,
-    //             start: new Date(t.start_date),
-    //             end: new Date(t.end_date),
-    //             resource: t, // Task объект
-    //         }));
-
-    //         setEvents(mapped);
-    //     } catch {
-    //         setError('Не удалось загрузить события календаря');
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }, []);
-
     const loadEvents = useCallback(async (start: Date, end: Date) => {
         if (USE_MOCK) {
-            // Моковые задачи
             const mockData = [
                 {
                     task_id: '1',
@@ -82,7 +53,6 @@ export default function CalendarPage() {
             return;
         }
 
-        // --- обычный (API) режим, пока backend не реализован ---
         try {
             setLoading(true);
             setError(null);
@@ -104,12 +74,12 @@ export default function CalendarPage() {
 
             setEvents(mapped);
         } catch (e) {
+            console.error(e);
             setError('Не удалось загрузить события календаря');
         } finally {
             setLoading(false);
         }
     }, []);
-
 
     useEffect(() => {
         const now = new Date();
@@ -131,17 +101,17 @@ export default function CalendarPage() {
     };
 
     return (
-        <div style={{ padding: '24px' }}>
-            <h1 style={{ marginBottom: '16px' }}>Календарь</h1>
+        <div className="calendar-page">
+            <h1 className="calendar-page__title">Календарь</h1>
 
             {loading && (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <div className="calendar-page__loader">
                     <Loader size="lg" />
                 </div>
             )}
 
             {error && (
-                <Card className="error-card">
+                <Card className="calendar-page__error">
                     <p>{error}</p>
                 </Card>
             )}
@@ -159,9 +129,9 @@ export default function CalendarPage() {
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onEdit={(taskId) => {
-                    console.log("Редактировать задачу", taskId);
+                    console.log('Редактировать задачу', taskId);
                 }}
-                onDelete={(taskId) => console.log("Удалить", taskId)}
+                onDelete={(taskId) => console.log('Удалить', taskId)}
             />
         </div>
     );

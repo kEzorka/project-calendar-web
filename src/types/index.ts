@@ -48,10 +48,10 @@ export interface Assignment {
 }
 
 export interface CalendarEvent {
-    id: string;
-    title: string;
-    start: Date;
-    end: Date;
-    resource: Task;
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: Task;
 }
 

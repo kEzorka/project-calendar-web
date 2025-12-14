@@ -1,6 +1,6 @@
-// src/App.tsx
 import React from 'react';
 import { ProfilePage } from './pages/ProfilePage';
+// import CalendarPage from "./pages/CalendarPage"
 
 const App: React.FC = () => {
   return (

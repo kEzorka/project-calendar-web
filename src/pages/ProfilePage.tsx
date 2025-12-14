@@ -3,7 +3,9 @@ import { Card } from '../components/ui/Card';
 import { Loader } from '../components/ui/Loader';
 import type { User, Task, WorkScheduleDay } from '../types';
 import { apiClient } from '../api/client';
+import { USE_MOCK } from '../mock';
 import './ProfilePage.scss';
+import { fakeLoadProfileData } from './ProfilePage_test_data.mock.ts';
 
 const DAY_NAMES: Record<number, string> = {
     1: 'Понедельник',
@@ -40,103 +42,6 @@ const getAllocatedHours = (task: Task): number => {
     return 0;
 };
 
-// тестовые данные
-
-const mockUser: User = {
-    id: 'user-1',
-    full_name: 'Иванов Иван',
-    username: 'ivan',
-    email: 'ivan@example.com',
-    timezone: 'Europe/Moscow',
-};
-
-const mockWorkSchedule: WorkScheduleDay[] = [
-    { day_of_week: 1, is_working_day: true, start_time: '09:00', end_time: '18:00' },
-    { day_of_week: 2, is_working_day: true, start_time: '10:00', end_time: '19:00' },
-    { day_of_week: 3, is_working_day: true, start_time: '09:00', end_time: '18:00' },
-    { day_of_week: 4, is_working_day: true, start_time: '09:00', end_time: '18:00' },
-    { day_of_week: 5, is_working_day: true, start_time: '09:00', end_time: '17:00' },
-    { day_of_week: 6, is_working_day: false },
-    { day_of_week: 7, is_working_day: false },
-];
-
-const mockTasks: Task[] = [
-    {
-        id: 'proj-1',
-        parent_task_id: null,
-        title: 'Запуск веб-календаря',
-        description: 'Подготовка и запуск MVP календаря',
-        status: 'in_progress',
-        priority: 'high',
-        start_date: '2025-12-10T09:00:00Z',
-    } as Task,
-    {
-        id: 'proj-2',
-        parent_task_id: null,
-        title: 'Онбординг команды',
-        description: 'Настроить рабочие процессы и расписания',
-        status: 'pending',
-        priority: 'medium',
-        start_date: '2025-12-12T10:00:00Z',
-    } as Task,
-    {
-        id: 'proj-3',
-        parent_task_id: null,
-        title: 'Исследование пользователей',
-        description: 'Интервью и анализ фидбэка',
-        status: 'completed',
-        priority: 'low',
-        start_date: '2025-12-01T12:00:00Z',
-    } as Task,
-    {
-        id: 'task-1',
-        parent_task_id: 'proj-1',
-        title: 'Сверстать CalendarPage',
-        description: 'Сетка календаря, модалки задач',
-        status: 'in_progress',
-        priority: 'high',
-        start_date: '2025-12-10T10:00:00Z',
-    } as Task,
-    {
-        id: 'task-2',
-        parent_task_id: 'proj-1',
-        title: 'Настроить API задач',
-        description: 'Связать фронт с бэком по задачам',
-        status: 'pending',
-        priority: 'medium',
-        start_date: '2025-12-11T14:00:00Z',
-    } as Task,
-    {
-        id: 'task-3',
-        parent_task_id: 'proj-2',
-        title: 'Собрать расписания',
-        description: 'Заполнить рабочие расписания всей команды',
-        status: 'cancelled',
-        priority: 'low',
-        start_date: '2025-12-15T09:00:00Z',
-    } as Task,
-].map((t, index) => {
-    (t as any).allocated_hours = 4 + index * 2;
-    return t;
-});
-
-function fakeLoadProfileData(): Promise<{
-    user: User;
-    workSchedule: WorkScheduleDay[];
-    tasks: Task[];
-}> {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                user: mockUser,
-                workSchedule: mockWorkSchedule,
-                tasks: mockTasks,
-            });
-        }, 600);
-    });
-}
-//
-
 type ProfileTabId = 'info' | 'schedule' | 'stats' | 'projects' | 'tasks';
 
 const PROFILE_TABS: { id: ProfileTabId; label: string }[] = [
@@ -161,24 +66,31 @@ export const ProfilePage: React.FC = () => {
     useEffect(() => {
         let isMounted = true;
 
-        const loadDataFromApi = async () => {
+        const loadData = async () => {
             try {
                 setLoading(true);
                 setError(null);
 
-                // профиль текущего пользователя
+                if (USE_MOCK) {
+                    const data = await fakeLoadProfileData();
+                    if (!isMounted) return;
+
+                    setUser(data.user);
+                    setWorkSchedule(data.workSchedule || []);
+                    setTasks(data.tasks || []);
+                    return;
+                }
+
                 const meResp = await apiClient.get<User>('/auth/me');
                 if (!isMounted) return;
                 const currentUser = meResp.data;
                 setUser(currentUser);
 
-                // забираем рабочее расписание и задачи пользователя
                 const [scheduleResp, tasksResp] = await Promise.all([
                     apiClient.get<WorkScheduleDay[]>(
                         `/users/${currentUser.id}/work-schedule`
                     ),
                     apiClient.get<Task[]>('/tasks', {
-                        // задачи, назначенные текущему пользователю
                         params: { assigned_to: 'me' },
                     }),
                 ]);
@@ -193,42 +105,11 @@ export const ProfilePage: React.FC = () => {
                     setError('Не удалось загрузить данные профиля. Попробуйте обновить страницу.');
                 }
             } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
+                if (isMounted) setLoading(false);
             }
         };
 
-        loadDataFromApi();
-
-        /*
-        // вариант с тестовыми данными
-        const loadDataFromMocks = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-
-                const { user, workSchedule, tasks } = await fakeLoadProfileData();
-                if (!isMounted) return;
-
-                setUser(user);
-                setWorkSchedule(workSchedule);
-                setTasks(tasks);
-            } catch (e) {
-                console.error(e);
-                if (isMounted) {
-                    setError('Ошибка при загрузке тестовых данных профиля');
-                }
-            } finally {
-                if (isMounted) {
-                    setLoading(false);
-                }
-            }
-        };
-
-        // Чтобы вернуться к демо-данным:
-        // loadDataFromMocks();
-        */
+        loadData();
 
         return () => {
             isMounted = false;
@@ -244,18 +125,14 @@ export const ProfilePage: React.FC = () => {
     const activeTasksCount = tasks.filter((t) => t.status === 'in_progress').length;
     const completedTasksCount = tasks.filter((t) => t.status === 'completed').length;
 
-    const totalAllocatedHours = tasks.reduce(
-        (sum, t) => sum + getAllocatedHours(t),
-        0
-    );
+    const totalAllocatedHours = tasks.reduce((sum, t) => sum + getAllocatedHours(t), 0);
 
     const formattedTotalHours =
         totalAllocatedHours % 1 === 0
             ? totalAllocatedHours.toString()
             : totalAllocatedHours.toFixed(1);
 
-    const projects = projectTasks;
-    const sortedProjects = [...projects].sort((a, b) =>
+    const sortedProjects = [...projectTasks].sort((a, b) =>
         (a.title || '').localeCompare(b.title || '', 'ru')
     );
 
@@ -288,10 +165,13 @@ export const ProfilePage: React.FC = () => {
             <h1 className="profile-page__title">Профиль</h1>
 
             <div className="profile-page__layout">
-                {/* пункт управления + аватар */}
+                {/* Боковая панель с профилем пользователя */}
                 <aside className="profile-page__sidebar">
-                    {user && (
-                        <div className="profile-page__user">
+               ф     {user && (
+                        <div
+                            className="profile-page__user"
+                            aria-label={user.full_name || user.username}
+                        >
                             <div className="profile-page__avatar" aria-hidden="true">
                                 {avatarLetter.toUpperCase()}
                             </div>
@@ -313,9 +193,7 @@ export const ProfilePage: React.FC = () => {
                                 type="button"
                                 className={
                                     'profile-tabs__btn' +
-                                    (activeTab === tab.id
-                                        ? ' profile-tabs__btn--active'
-                                        : '')
+                                    (activeTab === tab.id ? ' profile-tabs__btn--active' : '')
                                 }
                                 onClick={() => setActiveTab(tab.id)}
                             >
@@ -325,42 +203,40 @@ export const ProfilePage: React.FC = () => {
                         ))}
                     </nav>
                 </aside>
+                {/* Основная область контента */}
 
-                {/* правая область контента (не пункт управления) */}
                 <main className="profile-page__content">
-                    {/* Информация о пользователе */}
-                    {activeTab === 'info' && user && (
+                    {activeTab === 'info' && (
                         <Card className="profile-page__section" title="Информация о пользователе">
                             <div className="profile-info">
                                 <div className="profile-info__row">
                                     <span className="profile-info__label">ФИО</span>
                                     <span className="profile-info__value">
-                                        {user.full_name || '—'}
+                                        {user?.full_name || '—'}
                                     </span>
                                 </div>
                                 <div className="profile-info__row">
                                     <span className="profile-info__label">Username</span>
                                     <span className="profile-info__value">
-                                        @{user.username || '—'}
+                                        @{user?.username || '—'}
                                     </span>
                                 </div>
                                 <div className="profile-info__row">
                                     <span className="profile-info__label">Email</span>
                                     <span className="profile-info__value">
-                                        {user.email || '—'}
+                                        {user?.email || '—'}
                                     </span>
                                 </div>
                                 <div className="profile-info__row">
                                     <span className="profile-info__label">Часовой пояс</span>
                                     <span className="profile-info__value">
-                                        {user.timezone || '—'}
+                                        {user?.timezone || '—'}
                                     </span>
                                 </div>
                             </div>
                         </Card>
                     )}
 
-                    {/* Рабочее расписание */}
                     {activeTab === 'schedule' && (
                         <Card className="profile-page__section" title="Рабочее расписание">
                             {workSchedule.length === 0 ? (
@@ -411,7 +287,6 @@ export const ProfilePage: React.FC = () => {
                         </Card>
                     )}
 
-                    {/* Статистика */}
                     {activeTab === 'stats' && (
                         <Card className="profile-page__section" title="Статистика">
                             {tasks.length === 0 ? (
@@ -427,37 +302,26 @@ export const ProfilePage: React.FC = () => {
                                     </div>
                                     <div className="stats-card">
                                         <div className="stats-card__label">Активных задач</div>
-                                        <div className="stats-card__value">
-                                            {activeTasksCount}
-                                        </div>
+                                        <div className="stats-card__value">{activeTasksCount}</div>
                                         <div className="stats-card__hint">
                                             Со статусом «В работе»
                                         </div>
                                     </div>
                                     <div className="stats-card">
-                                        <div className="stats-card__label">
-                                            Завершённых задач
-                                        </div>
-                                        <div className="stats-card__value">
-                                            {completedTasksCount}
-                                        </div>
+                                        <div className="stats-card__label">Завершённых задач</div>
+                                        <div className="stats-card__value">{completedTasksCount}</div>
                                         <div className="stats-card__hint">Выполненные задачи</div>
                                     </div>
                                     <div className="stats-card">
                                         <div className="stats-card__label">Всего часов</div>
-                                        <div className="stats-card__value">
-                                            {formattedTotalHours}
-                                        </div>
-                                        <div className="stats-card__hint">
-                                            Сумма по всем задачам
-                                        </div>
+                                        <div className="stats-card__value">{formattedTotalHours}</div>
+                                        <div className="stats-card__hint">Сумма по всем задачам</div>
                                     </div>
                                 </div>
                             )}
                         </Card>
                     )}
 
-                    {/* Мои проекты */}
                     {activeTab === 'projects' && (
                         <Card className="profile-page__section" title="Мои проекты">
                             {sortedProjects.length === 0 ? (
@@ -481,10 +345,7 @@ export const ProfilePage: React.FC = () => {
                                                     {p.description}
                                                 </p>
                                             )}
-                                            <a
-                                                className="projects-list__link"
-                                                href={`/projects/${p.id}`}
-                                            >
+                                            <a className="projects-list__link" href={`/projects/${p.id}`}>
                                                 Открыть проект
                                             </a>
                                         </li>
@@ -494,7 +355,6 @@ export const ProfilePage: React.FC = () => {
                         </Card>
                     )}
 
-                    {/* Мои задачи */}
                     {activeTab === 'tasks' && (
                         <Card className="profile-page__section" title="Мои задачи">
                             {tasks.length === 0 ? (

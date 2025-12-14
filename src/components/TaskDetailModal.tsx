@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Modal } from '../components/ui/Modal';
-import { Card } from '../components/ui/Card';
-import { Button } from '../components/ui/Button';
-import { Loader } from '../components/ui/Loader';
+import { Modal } from './ui/Modal';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
+import { Loader } from './ui/Loader';
 import type { Task } from '../types';
+import './TaskDetailModal.scss';
 
 const formatDate = (date: string | undefined): string => {
     if (!date) return '—';
@@ -92,16 +93,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     </Card>
 
                     {/* Кнопки снизу основной модалки */}
-                    <div
-                        style={{
-                            marginTop: '16px',
-                            paddingTop: '12px',
-                            borderTop: '1px solid #e5e7eb',
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            columnGap: '12px', // маленький зазор между кнопками
-                        }}
-                    >
+                    <div className="task-detail-modal__actions">
                         {onEdit && (
                             <Button
                                 variant="primary"

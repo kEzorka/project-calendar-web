@@ -26,7 +26,7 @@ const priorityColors: Record<string, string> = {
 interface CalendarViewProps {
     events: CalendarEvent[];
     onSelectEvent?: (e: CalendarEvent) => void;
-    onRangeChange?: (range: any) => void;
+    onRangeChange?: (range: Date[] | { start: Date; end: Date }) => void;
 }
 
 export const CalendarView = ({
@@ -74,9 +74,19 @@ export const CalendarView = ({
                     setCurrentDate(newDate);
                 }}
 
-
                 onRangeChange={(range: unknown) => {
-                    if (onRangeChange) onRangeChange(range);
+                    if (!onRangeChange) return;
+
+                    if (Array.isArray(range)) {
+                        onRangeChange(range);
+                    } else if (
+                        range &&
+                        typeof range === 'object' &&
+                        'start' in range &&
+                        'end' in range
+                    ) {
+                        onRangeChange(range as { start: Date; end: Date });
+                    }
                 }}
 
                 onSelectEvent={onSelectEvent}
@@ -94,18 +104,18 @@ export const CalendarView = ({
                 formats={{
                     monthHeaderFormat: (date: Date, culture: string | undefined, loc: any) =>
                         loc
-                            .format(date, "LLLL yyyy", culture)
+                            .format(date, 'LLLL yyyy', culture)
                             .replace(/^./, (c: string) => c.toUpperCase()),
 
                     dayHeaderFormat: (date: Date, culture: string | undefined, loc: any) =>
-                        loc.format(date, "d LLLL", culture),
+                        loc.format(date, 'd LLLL', culture),
 
                     dayRangeHeaderFormat: (
                         { start, end }: { start: Date; end: Date },
                         culture: string | undefined,
                         loc: any
                     ) =>
-                        `${loc.format(start, "d LLLL", culture)} — ${loc.format(end, "d LLLL yyyy", culture)}`,
+                        `${loc.format(start, 'd LLLL', culture)} — ${loc.format(end, 'd LLLL yyyy', culture)}`,
                 }}
 
                 messages={{

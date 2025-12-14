@@ -1,0 +1,17 @@
+.calendar-page {
+    padding: 24px;
+
+    &__title {
+        margin-bottom: 16px;
+    }
+
+    &__loader {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    &__error {
+        color: var(--color-danger, #d32f2f);
+    }
+}

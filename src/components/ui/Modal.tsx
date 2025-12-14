@@ -10,7 +10,7 @@ interface ModalProps {
 }
 
 const getContentPadding = (size: 'sm' | 'md' | 'lg') => {
-  // ещё меньше расстояние между хедером и контентом
+  // Возвращает значение padding для контента модалки в зависимости от размера
   switch (size) {
     case 'sm':
       return '6px 20px 18px';
