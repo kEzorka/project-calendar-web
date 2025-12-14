@@ -1,0 +1,13 @@
+@import '../styles/variables';
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+
+  &__actions {
+    display: flex;
+    gap: $spacing-4;
+    margin-top: $spacing-4;
+  }
+}
