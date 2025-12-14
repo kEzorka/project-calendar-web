@@ -1,15 +1,14 @@
 // src/App.tsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectDetailPage from './pages/ProjectDetailPage';
-import CalendarPage from './pages/CalendarPage'; // ДОБАВЬ Саминов
-import { ProfilePage } from './pages/ProfilePage'; // ДОБАВЬ Саминов
+import CalendarPage from './pages/CalendarPage';
+import { ProfilePage } from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
 
-function App() {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
@@ -32,7 +31,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/calendar"
           element={
@@ -49,11 +47,9 @@ function App() {
             </ProtectedRoute>
           }
         />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
-}
+};
 
 export default App;

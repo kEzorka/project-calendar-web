@@ -70,3 +70,12 @@ export interface AssignmentData {
   role: 'owner' | 'supervisor' | 'executor' | 'hybrid' | 'spectator';
   allocated_hours?: number;
 }
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: Task;
+}
+
