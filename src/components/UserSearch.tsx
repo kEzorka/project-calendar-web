@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Input } from './ui/Input';
-import { Card } from './ui/Card.tsx';
-import { Loader } from './ui/Loader.tsx';
+import { Card } from './ui/Card';
+import { Loader } from './ui/Loader';
 import { userService } from '../minimal_test/api/userService';
 import type { User } from '../types';
 

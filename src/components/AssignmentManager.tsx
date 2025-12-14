@@ -4,7 +4,7 @@ import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { Modal } from './ui/Modal';
 import { assignmentService } from '../minimal_test/api/assignmentService';
-import type { Assignment, AssignmentData } from '../types';
+import type { Assignment } from '../types';
 import './AssignmentManager.scss';
 
 interface AssignmentManagerProps {

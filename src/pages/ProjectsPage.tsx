@@ -131,7 +131,6 @@ const ProjectsPage: React.FC = () => {
         <TaskForm
           onSubmit={handleCreateProject}
           onCancel={() => setIsModalOpen(false)}
-          isProject={true}
         />
       </Modal>
     </div>

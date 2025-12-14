@@ -38,6 +38,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const [showConfirm, setShowConfirm] = useState(false);
 
   if (!isOpen) return null;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Детали задачи">
       {loading && (
