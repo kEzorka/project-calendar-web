@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { taskService } from '../api/taskService';
 import type { Task } from '../types';
+import { Modal } from './ui/Modal';
+import { TaskDetailView } from './TaskDetailView';
 import './TaskTree.scss';
 
 interface TaskNodeProps {
   task: Task;
   level: number;
   onTaskClick: (task: Task) => void;
+  onTaskDoubleClick: (task: Task) => void;
+  selectedTaskId: string | null;
 }
 
-const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
+const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick, onTaskDoubleClick, selectedTaskId }) => {
   const [expanded, setExpanded] = useState(false);
   const [subtasks, setSubtasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,9 +52,11 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
     return labels[status] || status;
   };
 
+  const isSelected = task.id === selectedTaskId;
+
   return (
     <div className="task-node" style={{ marginLeft: `${level * 20}px` }}>
-      <div className="task-node__content">
+      <div className={`task-node__content ${isSelected ? 'task-node__content--selected' : ''}`}>
         <button
           className={`task-node__expand ${expanded ? 'task-node__expand--open' : ''}`}
           onClick={handleExpand}
@@ -59,7 +65,11 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
           {loading ? '⌛' : '▶'}
         </button>
 
-        <div className="task-node__info" onClick={() => onTaskClick(task)}>
+        <div 
+          className="task-node__info" 
+          onClick={() => onTaskClick(task)}
+          onDoubleClick={() => onTaskDoubleClick(task)}
+        >
           <span className="task-node__title">{task.title}</span>
           <span className="task-node__status">{getStatusLabel(task.status)}</span>
           <span
@@ -80,6 +90,8 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
                 task={subtask}
                 level={level + 1}
                 onTaskClick={onTaskClick}
+                onTaskDoubleClick={onTaskDoubleClick}
+                selectedTaskId={selectedTaskId}
               />
             ))
           ) : (
@@ -93,12 +105,14 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
 
 interface TaskTreeProps {
   taskId: string;
+  onTaskSelect?: (task: Task | null) => void;
 }
 
-export const TaskTree: React.FC<TaskTreeProps> = ({ taskId }) => {
+export const TaskTree: React.FC<TaskTreeProps> = ({ taskId, onTaskSelect }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
 
   useEffect(() => {
     loadTasks();
@@ -117,7 +131,16 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId }) => {
   };
 
   const handleTaskClick = (task: Task) => {
-    setSelectedTask(task);
+    // Toggle selection: если кликнули на уже выбранную задачу, снимаем выбор
+    const newSelectedTask = selectedTask?.id === task.id ? null : task;
+    setSelectedTask(newSelectedTask);
+    if (onTaskSelect) {
+      onTaskSelect(newSelectedTask);
+    }
+  };
+
+  const handleTaskDoubleClick = (task: Task) => {
+    setDetailTask(task);
   };
 
   if (loading) {
@@ -128,16 +151,37 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId }) => {
     <div className="task-tree">
       {tasks.length > 0 ? (
         tasks.map((task) => (
-          <TaskNode key={task.id} task={task} level={0} onTaskClick={handleTaskClick} />
+          <TaskNode 
+            key={task.id} 
+            task={task} 
+            level={0} 
+            onTaskClick={handleTaskClick}
+            onTaskDoubleClick={handleTaskDoubleClick}
+            selectedTaskId={selectedTask?.id || null}
+          />
         ))
       ) : (
         <div className="task-tree__empty">Нет задач</div>
       )}
       {selectedTask && (
         <div className="task-tree__selected">
-          <strong>Выбрана:</strong> {selectedTask.title}
+          <strong>Выбрана задача:</strong> {selectedTask.title}
+          <button 
+            onClick={() => handleTaskClick(selectedTask)}
+            className="task-tree__deselect"
+          >
+            ✕
+          </button>
         </div>
       )}
+      
+      <Modal
+        isOpen={!!detailTask}
+        onClose={() => setDetailTask(null)}
+        title="Детали задачи"
+      >
+        {detailTask && <TaskDetailView task={detailTask} />}
+      </Modal>
     </div>
   );
 };

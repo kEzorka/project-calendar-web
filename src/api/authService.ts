@@ -1,44 +1,64 @@
 // временно не используем apiClient, пока нет бекенда
 // import { apiClient } from './client';
 import type { RegisterData, LoginData, User } from '../types';
+import { validateUserCredentials, getUserByEmail, MOCK_USERS } from '../mock';
 
 interface AuthResponse {
   token: string;
   user: User;
 }
 
+let currentUser: User | null = null;
+
 export const authService = {
   async register(data: RegisterData): Promise<AuthResponse> {
     // имитация сетевой задержки
     await new Promise((r) => setTimeout(r, 500));
 
+    // Проверяем, существует ли пользователь с таким email
+    const existingUser = getUserByEmail(data.email);
+    if (existingUser) {
+      throw new Error('Пользователь с таким email уже существует');
+    }
+
+    // В mock режиме просто принимаем регистрацию без сохранения
+    // Используем первого пользователя из mock данных для демонстрации
     const fakeUser: User = {
-      id: '1',
+      id: 'temp-' + Date.now(),
       username: data.username,
       email: data.email,
       full_name: data.full_name,
       timezone: data.timezone,
     };
 
-    const token = 'fake-jwt-token';
+    const token = 'fake-jwt-token-' + fakeUser.id;
     localStorage.setItem('auth_token', token);
+    localStorage.setItem('current_user', JSON.stringify(fakeUser));
+    currentUser = fakeUser;
     return { token, user: fakeUser };
   },
 
   async login(data: LoginData): Promise<AuthResponse> {
     await new Promise((r) => setTimeout(r, 500));
 
-    const fakeUser: User = {
-      id: '1',
-      username: 'test',
-      email: data.email,
-      full_name: 'Test User',
-      timezone: 'Europe/Moscow',
-    };
+    // Валидация пользователя по email и паролю
+    const user = validateUserCredentials(data.email, data.password);
+    
+    if (!user) {
+      // Проверяем, существует ли пользователь с таким email
+      const existingUser = getUserByEmail(data.email);
+      if (existingUser) {
+        throw new Error('Неверный пароль');
+      } else {
+        throw new Error('Пользователя с такими данными не существует');
+      }
+    }
 
-    const token = 'fake-jwt-token';
+    const token = 'fake-jwt-token-' + user.id;
     localStorage.setItem('auth_token', token);
-    return { token, user: fakeUser };
+    localStorage.setItem('current_user', JSON.stringify(user));
+    currentUser = user;
+    return { token, user };
   },
 
   async getCurrentUser(): Promise<User> {
@@ -47,17 +67,22 @@ export const authService = {
       throw new Error('Not authenticated');
     }
 
-    return {
-      id: '1',
-      username: 'test',
-      email: 'test@example.com',
-      full_name: 'Test User',
-      timezone: 'Europe/Moscow',
-    };
+    // Проверяем сохраненного пользователя
+    const savedUser = localStorage.getItem('current_user');
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      return currentUser!;
+    }
+
+    // Fallback на первого пользователя
+    currentUser = MOCK_USERS[0];
+    return currentUser;
   },
 
   logout(): void {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('current_user');
+    currentUser = null;
     window.location.href = '/login';
   },
 

@@ -5,12 +5,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, $primary-light 0%, $secondary-light 100%);
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
   padding: $spacing-6;
 
   &__card {
     max-width: 600px;
     width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   &__header {

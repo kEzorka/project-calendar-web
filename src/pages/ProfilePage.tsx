@@ -3,6 +3,10 @@ import { Card } from '../components/ui/Card';
 import { Loader } from '../components/ui/Loader';
 import type { User, Task, WorkScheduleDay } from '../types';
 import { apiClient } from '../api/client';
+import { authService } from '../api/authService';
+import { taskService } from '../api/taskService';
+import { assignmentService } from '../minimal_test/api/assignmentService';
+import { getTasksByUserId, getProjectsByUserId } from '../mock';
 import { USE_MOCK } from '../mock';
 import './ProfilePage.scss';
 
@@ -38,100 +42,46 @@ const getAllocatedHours = (task: Task): number => {
     const parsed = Number(raw);
     return Number.isFinite(parsed) ? parsed : 0;
   }
-  return 0;
+  return task.estimated_hours || 0;
 };
 
-const mockUser: User = {
-  id: 'user-1',
-  full_name: 'Иванов Иван',
-  username: 'ivan',
-  email: 'ivan@example.com',
-  timezone: 'Europe/Moscow',
-};
-
-const mockWorkSchedule: WorkScheduleDay[] = [
+// Фиктивное рабочее расписание (понедельник-пятница 9:00-18:00)
+const DEFAULT_WORK_SCHEDULE: WorkScheduleDay[] = [
   { day_of_week: 1, is_working_day: true, start_time: '09:00', end_time: '18:00' },
-  { day_of_week: 2, is_working_day: true, start_time: '10:00', end_time: '19:00' },
+  { day_of_week: 2, is_working_day: true, start_time: '09:00', end_time: '18:00' },
   { day_of_week: 3, is_working_day: true, start_time: '09:00', end_time: '18:00' },
   { day_of_week: 4, is_working_day: true, start_time: '09:00', end_time: '18:00' },
-  { day_of_week: 5, is_working_day: true, start_time: '09:00', end_time: '17:00' },
+  { day_of_week: 5, is_working_day: true, start_time: '09:00', end_time: '18:00' },
   { day_of_week: 6, is_working_day: false },
   { day_of_week: 7, is_working_day: false },
 ];
 
-const mockTasks: Task[] = [
-  {
-    id: 'proj-1',
-    parent_task_id: null,
-    title: 'Запуск веб-календаря',
-    description: 'Подготовка и запуск MVP календаря',
-    status: 'in_progress',
-    priority: 'high',
-    start_date: '2025-12-10T09:00:00Z',
-  } as Task,
-  {
-    id: 'proj-2',
-    parent_task_id: null,
-    title: 'Онбординг команды',
-    description: 'Настроить рабочие процессы и расписания',
-    status: 'pending',
-    priority: 'medium',
-    start_date: '2025-12-12T10:00:00Z',
-  } as Task,
-  {
-    id: 'proj-3',
-    parent_task_id: null,
-    title: 'Исследование пользователей',
-    description: 'Интервью и анализ фидбэка',
-    status: 'completed',
-    priority: 'low',
-    start_date: '2025-12-01T12:00:00Z',
-  } as Task,
-  {
-    id: 'task-1',
-    parent_task_id: 'proj-1',
-    title: 'Сверстать CalendarPage',
-    description: 'Сетка календаря, модалки задач',
-    status: 'in_progress',
-    priority: 'high',
-    start_date: '2025-12-10T10:00:00Z',
-  } as Task,
-  {
-    id: 'task-2',
-    parent_task_id: 'proj-1',
-    title: 'Настроить API задач',
-    description: 'Связать фронт с бэком по задачам',
-    status: 'pending',
-    priority: 'medium',
-    start_date: '2025-12-11T14:00:00Z',
-  } as Task,
-  {
-    id: 'task-3',
-    parent_task_id: 'proj-2',
-    title: 'Собрать расписания',
-    description: 'Заполнить рабочие расписания всей команды',
-    status: 'cancelled',
-    priority: 'low',
-    start_date: '2025-12-15T09:00:00Z',
-  } as Task,
-].map((t, index) => {
-  (t as any).allocated_hours = 4 + index * 2;
-  return t;
-});
-
-function fakeLoadProfileData(): Promise<{
+async function fakeLoadProfileData(): Promise<{
   user: User;
   workSchedule: WorkScheduleDay[];
   tasks: Task[];
 }> {
+  // Получаем текущего пользователя
+  const user = await authService.getCurrentUser();
+  
+  // Получаем все задачи
+  const allTasks = await taskService.getTasks();
+  
+  // Получаем назначения текущего пользователя
+  const userAssignments = assignmentService.getMockAssignments().filter(a => a.user_id === user.id);
+  const userTaskIds = userAssignments.map(a => a.task_id);
+  
+  // Фильтруем задачи пользователя
+  const tasks = allTasks.filter(t => userTaskIds.includes(t.id));
+  
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        user: mockUser,
-        workSchedule: mockWorkSchedule,
-        tasks: mockTasks,
+        user,
+        workSchedule: DEFAULT_WORK_SCHEDULE,
+        tasks,
       });
-    }, 600);
+    }, 300);
   });
 }
 

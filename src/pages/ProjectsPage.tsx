@@ -7,6 +7,8 @@ import { Loader } from '../components/ui/Loader';
 import { EmptyState } from '../components/EmptyState';
 import { TaskForm } from '../components/TaskForm';
 import { taskService } from '../api/taskService';
+import { assignmentService } from '../minimal_test/api/assignmentService';
+import { authService } from '../api/authService';
 import type { Task } from '../types';
 import './ProjectsPage.scss';
 
@@ -35,10 +37,19 @@ const ProjectsPage: React.FC = () => {
 
   const handleCreateProject = async (formData: any) => {
     try {
+      const currentUser = await authService.getCurrentUser();
       const newProject = await taskService.createTask({
         ...formData,
         parent_task_id: null,
       });
+      
+      // Назначаем создателя как owner проекта
+      await assignmentService.assignUser(newProject.id, {
+        user_id: currentUser.id,
+        role: 'owner',
+        allocated_hours: 0,
+      });
+      
       setProjects([...projects, newProject]);
       setIsModalOpen(false);
     } catch (err: any) {
@@ -108,15 +119,7 @@ const ProjectsPage: React.FC = () => {
               hoverable
             >
               <p className="projects-page__description">{project.description}</p>
-              <div className="projects-page__meta">
-                <span className="projects-page__status">{getStatusLabel(project.status)}</span>
-                <span
-                  className="projects-page__priority"
-                  style={{ backgroundColor: getPriorityColor(project.priority) }}
-                >
-                  {project.priority}
-                </span>
-              </div>
+              {/* Для проектов не показываем статус и приоритет */}
             </Card>
           ))}
         </div>
@@ -131,6 +134,7 @@ const ProjectsPage: React.FC = () => {
         <TaskForm
           onSubmit={handleCreateProject}
           onCancel={() => setIsModalOpen(false)}
+          isProject={true}
         />
       </Modal>
     </div>
