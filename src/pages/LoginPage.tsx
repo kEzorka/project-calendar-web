@@ -23,6 +23,12 @@ const LoginPage: React.FC = () => {
 
     if (!formData.email.trim()) {
       newErrors.email = 'Email обязателен';
+    } else {
+      // Проверка формата email: должен быть @ и хотя бы одна точка после @
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email)) {
+        newErrors.email = 'Неверный формат email. Пример: user@example.com';
+      }
     }
 
     if (!formData.password) {
@@ -47,7 +53,7 @@ const LoginPage: React.FC = () => {
       await authService.login(formData);
       navigate('/');
     } catch (err: any) {
-      setError('Неверный email или пароль');
+      setError(err.message || 'Ошибка при входе');
     } finally {
       setLoading(false);
     }
