@@ -17,6 +17,7 @@ const ProjectDetailPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -38,15 +39,31 @@ const ProjectDetailPage: React.FC = () => {
 
   const handleCreateTask = async (formData: any) => {
     try {
+      // Если выбрана задача, создаем подзадачу для нее
+      const parentId = selectedTask ? selectedTask.id : id;
       await taskService.createTask({
         ...formData,
-        parent_task_id: id,
+        parent_task_id: parentId,
       });
       loadProject();
       setIsModalOpen(false);
+      setSelectedTask(null); // Сбрасываем выбор после создания
     } catch (err: any) {
       setError(err.message || 'Ошибка при создании задачи');
     }
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    // Не сбрасываем выбор задачи при закрытии модалки без создания
+  };
+
+  const handleTaskSelect = (task: Task | null) => {
+    setSelectedTask(task);
   };
 
   const getStatusLabel = (status: string): string => {
@@ -90,13 +107,16 @@ const ProjectDetailPage: React.FC = () => {
         <div className="project-detail-page__header-content">
           <h1>{project.title}</h1>
           <p className="project-detail-page__description">{project.description}</p>
-          <div className="project-detail-page__meta">
-            <span className="project-detail-page__status">{getStatusLabel(project.status)}</span>
-            <span className="project-detail-page__priority">{project.priority}</span>
-          </div>
+          {/* Для проектов не показываем статус и приоритет */}
+          {project.parent_task_id && (
+            <div className="project-detail-page__meta">
+              <span className="project-detail-page__status">{getStatusLabel(project.status)}</span>
+              <span className="project-detail-page__priority">{project.priority}</span>
+            </div>
+          )}
         </div>
-        <Button onClick={() => setIsModalOpen(true)} variant="primary" size="lg">
-          + Создать задачу
+        <Button onClick={handleOpenModal} variant="primary" size="lg">
+          + Создать {selectedTask ? 'подзадачу' : 'задачу'}
         </Button>
       </div>
 
@@ -104,7 +124,7 @@ const ProjectDetailPage: React.FC = () => {
 
       <div className="project-detail-page__tasks">
         <h2>Задачи</h2>
-        {id && <TaskTree taskId={id} />}
+        {id && <TaskTree taskId={id} onTaskSelect={handleTaskSelect} />}
       </div>
 
       <div className="project-detail-page__assignments">
@@ -114,11 +134,11 @@ const ProjectDetailPage: React.FC = () => {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Создать задачу"
+        onClose={handleCloseModal}
+        title={selectedTask ? `Создать подзадачу для "${selectedTask.title}"` : 'Создать задачу'}
         size="md"
       >
-        <TaskForm onSubmit={handleCreateTask} onCancel={() => setIsModalOpen(false)} />
+        <TaskForm onSubmit={handleCreateTask} onCancel={handleCloseModal} />
       </Modal>
     </div>
   );

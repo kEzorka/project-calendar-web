@@ -39,13 +39,25 @@ export const taskService = {
 
 // import { apiClient } from './client';
 import type { Task, TasksQueryParams } from '../types';
+import { 
+  MOCK_TASKS, 
+  MOCK_ASSIGNMENTS, 
+  getTasksByParentId, 
+  getTaskById,
+  getAssignmentsByTaskId,
+  getUsersByTaskId 
+} from '../mock';
 
-let mockTasks: Task[] = [];
+// Создаем копию для изменений
+let mockTasks: Task[] = [...MOCK_TASKS];
+let mockAssignments = [...MOCK_ASSIGNMENTS];
 
-const genId = () => Math.random().toString(36).slice(2);
+const genId = () => 'task-' + Math.random().toString(36).slice(2);
 
 export const taskService = {
   async getTasks(params?: TasksQueryParams): Promise<Task[]> {
+    await new Promise((r) => setTimeout(r, 200)); // имитация задержки
+
     if (params?.parent_task_id === null) {
       return mockTasks.filter((t) => !t.parent_task_id);
     }
@@ -56,6 +68,7 @@ export const taskService = {
   },
 
   async getTask(id: string): Promise<Task> {
+    await new Promise((r) => setTimeout(r, 100));
     const task = mockTasks.find((t) => t.id === id);
     if (!task) {
       throw new Error('Task not found');
@@ -64,25 +77,27 @@ export const taskService = {
   },
 
   async createTask(data: Partial<Task>): Promise<Task> {
-    const now = new Date().toISOString();
+    await new Promise((r) => setTimeout(r, 300));
+    const now = new Date().toISOString().split('T')[0]; // только дата
     const newTask: Task = {
       id: genId(),
       parent_task_id: data.parent_task_id ?? null,
       title: data.title || 'Без названия',
       description: data.description || '',
-      status: data.status || 'pending',
+      status: 'pending', // всегда начинается с pending
       priority: data.priority || 'medium',
       start_date: data.start_date || now,
       end_date: data.end_date || now,
       estimated_hours: data.estimated_hours ?? 0,
-      created_at: now,
-      updated_at: now,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
     mockTasks.push(newTask);
     return newTask;
   },
 
   async updateTask(id: string, data: Partial<Task>): Promise<Task> {
+    await new Promise((r) => setTimeout(r, 200));
     const index = mockTasks.findIndex((t) => t.id === id);
     if (index === -1) {
       throw new Error('Task not found');
@@ -97,10 +112,30 @@ export const taskService = {
   },
 
   async deleteTask(id: string): Promise<void> {
-    mockTasks = mockTasks.filter((t) => t.id !== id);
+    await new Promise((r) => setTimeout(r, 200));
+    // Удаляем задачу и все её подзадачи рекурсивно
+    const deleteRecursive = (taskId: string) => {
+      const subtasks = mockTasks.filter((t) => t.parent_task_id === taskId);
+      subtasks.forEach((st) => deleteRecursive(st.id));
+      mockTasks = mockTasks.filter((t) => t.id !== taskId);
+      mockAssignments = mockAssignments.filter((a) => a.task_id !== taskId);
+    };
+    deleteRecursive(id);
   },
 
   async getSubtasks(id: string): Promise<Task[]> {
+    await new Promise((r) => setTimeout(r, 100));
     return mockTasks.filter((t) => t.parent_task_id === id);
+  },
+
+  // Дополнительные методы для работы с назначениями
+  async getTaskAssignments(taskId: string) {
+    await new Promise((r) => setTimeout(r, 100));
+    return mockAssignments.filter((a) => a.task_id === taskId);
+  },
+
+  async getTaskUsers(taskId: string) {
+    await new Promise((r) => setTimeout(r, 100));
+    return getUsersByTaskId(taskId);
   },
 };

@@ -1,4 +1,4 @@
-import React, { useState /*, useEffect*/ } from 'react';
+import React, { useState, useEffect /*, useEffect*/ } from 'react';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { Button } from './ui/Button';
@@ -9,6 +9,7 @@ interface TaskFormProps {
   onSubmit: (data: any) => void;
   onCancel: () => void;
   task?: Task;
+  isProject?: boolean; // Флаг, что это проект (без приоритета и статуса)
 }
 
 const PRIORITY_OPTIONS = [
@@ -18,30 +19,60 @@ const PRIORITY_OPTIONS = [
   { value: 'critical', label: 'Критический' },
 ];
 
-const STATUS_OPTIONS = [
-  { value: 'pending', label: 'Новая' },
-  { value: 'in_progress', label: 'В процессе' },
-  { value: 'completed', label: 'Завершена' },
-  { value: 'cancelled', label: 'Отменена' },
-];
+// Функция для расчета разницы в днях между датами
+const calculateDaysDiff = (startDate: string, endDate: string): number => {
+  if (!startDate || !endDate) return 0;
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffTime = end.getTime() - start.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays >= 0 ? diffDays : 0;
+};
+
+// Функция для добавления дней к дате
+const addDaysToDate = (dateStr: string, days: number): string => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+};
 
 export const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit,
   onCancel,
   task,
+  isProject = false,
 }) => {
   const [formData, setFormData] = useState({
     title: task?.title || '',
     description: task?.description || '',
     start_date: task?.start_date || '',
     end_date: task?.end_date || '',
+    duration_days: task?.duration_days || 0,
     priority: task?.priority || 'medium',
     estimated_hours: task?.estimated_hours || 0,
-    status: task?.status || 'pending',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [lastChangedField, setLastChangedField] = useState<'start' | 'end' | 'duration' | null>(null);
+
+  // Пересчет при изменении дат или длительности
+  useEffect(() => {
+    if (lastChangedField === 'start' && formData.start_date && formData.duration_days > 0) {
+      // Изменили дату начала -> пересчитываем дату окончания
+      const newEndDate = addDaysToDate(formData.start_date, formData.duration_days);
+      setFormData(prev => ({ ...prev, end_date: newEndDate }));
+    } else if (lastChangedField === 'end' && formData.start_date && formData.end_date) {
+      // Изменили дату окончания -> пересчитываем длительность
+      const newDuration = calculateDaysDiff(formData.start_date, formData.end_date);
+      setFormData(prev => ({ ...prev, duration_days: newDuration }));
+    } else if (lastChangedField === 'duration' && formData.start_date && formData.duration_days >= 0) {
+      // Изменили длительность -> пересчитываем дату окончания
+      const newEndDate = addDaysToDate(formData.start_date, formData.duration_days);
+      setFormData(prev => ({ ...prev, end_date: newEndDate }));
+    }
+  }, [formData.start_date, formData.end_date, formData.duration_days, lastChangedField]);
 
   const validateField = (field: string, value: any): string => {
     switch (field) {
@@ -61,6 +92,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       case 'estimated_hours':
         if (value < 0) return 'Количество часов не может быть отрицательным';
         return '';
+      case 'duration_days':
+        if (value < 0) return 'Длительность не может быть отрицательной';
+        return '';
       default:
         return '';
     }
@@ -76,6 +110,28 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         setErrors((prev) => ({ ...prev, [field]: error }));
       }
     };
+
+  const handleDateChange = (field: 'start_date' | 'end_date') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData({ ...formData, [field]: value });
+    setLastChangedField(field === 'start_date' ? 'start' : 'end');
+
+    if (touched[field]) {
+      const error = validateField(field, value);
+      setErrors((prev) => ({ ...prev, [field]: error }));
+    }
+  };
+
+  const handleDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value) || 0;
+    setFormData({ ...formData, duration_days: value });
+    setLastChangedField('duration');
+
+    if (touched['duration_days']) {
+      const error = validateField('duration_days', value);
+      setErrors((prev) => ({ ...prev, duration_days: error }));
+    }
+  };
 
   const handleSelectChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
@@ -102,7 +158,14 @@ export const TaskForm: React.FC<TaskFormProps> = ({
       return;
     }
 
-    onSubmit(formData);
+    // Не отправляем статус при создании - он всегда pending
+    const submitData = { ...formData };
+    if (!task) {
+      // При создании новой задачи статус не отправляем
+      delete (submitData as any).status;
+    }
+
+    onSubmit(submitData);
   };
 
   return (
@@ -126,37 +189,44 @@ export const TaskForm: React.FC<TaskFormProps> = ({
         isTextarea
       />
 
-      <Input
-        label="Дата начала"
-        type="date"
-        value={formData.start_date}
-        onChange={handleInputChange('start_date')}
-        onBlur={handleBlur('start_date')}
-        error={errors.start_date}
-      />
+      <div className="task-form__date-group">
+        <Input
+          label="Дата начала"
+          type="date"
+          value={formData.start_date}
+          onChange={handleDateChange('start_date')}
+          onBlur={handleBlur('start_date')}
+          error={errors.start_date}
+        />
 
-      <Input
-        label="Дата окончания"
-        type="date"
-        value={formData.end_date}
-        onChange={handleInputChange('end_date')}
-        onBlur={handleBlur('end_date')}
-        error={errors.end_date}
-      />
+        <Input
+          label="Длительность (дней)"
+          type="number"
+          value={formData.duration_days.toString()}
+          onChange={handleDurationChange}
+          onBlur={handleBlur('duration_days')}
+          error={errors.duration_days}
+          min="0"
+        />
 
-      <Select
-        label="Приоритет"
-        options={PRIORITY_OPTIONS}
-        value={formData.priority}
-        onChange={(e) => handleSelectChange('priority', e.target.value)}
-      />
+        <Input
+          label="Дата окончания"
+          type="date"
+          value={formData.end_date}
+          onChange={handleDateChange('end_date')}
+          onBlur={handleBlur('end_date')}
+          error={errors.end_date}
+        />
+      </div>
 
-      <Select
-        label="Статус"
-        options={STATUS_OPTIONS}
-        value={formData.status}
-        onChange={(e) => handleSelectChange('status', e.target.value)}
-      />
+      {!isProject && (
+        <Select
+          label="Приоритет"
+          options={PRIORITY_OPTIONS}
+          value={formData.priority}
+          onChange={(e) => handleSelectChange('priority', e.target.value)}
+        />
+      )}
 
       <Input
         label="Ожидаемые часы"
