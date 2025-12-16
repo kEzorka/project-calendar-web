@@ -7,9 +7,10 @@ interface TaskNodeProps {
   task: Task;
   level: number;
   onTaskClick: (task: Task) => void;
+  selectedTaskId: string | null;
 }
 
-const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
+const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick, selectedTaskId }) => {
   const [expanded, setExpanded] = useState(false);
   const [subtasks, setSubtasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,9 +49,11 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
     return labels[status] || status;
   };
 
+  const isSelected = task.id === selectedTaskId;
+
   return (
     <div className="task-node" style={{ marginLeft: `${level * 20}px` }}>
-      <div className="task-node__content">
+      <div className={`task-node__content ${isSelected ? 'task-node__content--selected' : ''}`}>
         <button
           className={`task-node__expand ${expanded ? 'task-node__expand--open' : ''}`}
           onClick={handleExpand}
@@ -80,6 +83,7 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
                 task={subtask}
                 level={level + 1}
                 onTaskClick={onTaskClick}
+                selectedTaskId={selectedTaskId}
               />
             ))
           ) : (
@@ -93,9 +97,10 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick }) => {
 
 interface TaskTreeProps {
   taskId: string;
+  onTaskSelect?: (task: Task | null) => void;
 }
 
-export const TaskTree: React.FC<TaskTreeProps> = ({ taskId }) => {
+export const TaskTree: React.FC<TaskTreeProps> = ({ taskId, onTaskSelect }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -117,7 +122,12 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId }) => {
   };
 
   const handleTaskClick = (task: Task) => {
-    setSelectedTask(task);
+    // Toggle selection: если кликнули на уже выбранную задачу, снимаем выбор
+    const newSelectedTask = selectedTask?.id === task.id ? null : task;
+    setSelectedTask(newSelectedTask);
+    if (onTaskSelect) {
+      onTaskSelect(newSelectedTask);
+    }
   };
 
   if (loading) {
@@ -128,14 +138,26 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId }) => {
     <div className="task-tree">
       {tasks.length > 0 ? (
         tasks.map((task) => (
-          <TaskNode key={task.id} task={task} level={0} onTaskClick={handleTaskClick} />
+          <TaskNode 
+            key={task.id} 
+            task={task} 
+            level={0} 
+            onTaskClick={handleTaskClick}
+            selectedTaskId={selectedTask?.id || null}
+          />
         ))
       ) : (
         <div className="task-tree__empty">Нет задач</div>
       )}
       {selectedTask && (
         <div className="task-tree__selected">
-          <strong>Выбрана:</strong> {selectedTask.title}
+          <strong>Выбрана задача:</strong> {selectedTask.title}
+          <button 
+            onClick={() => handleTaskClick(selectedTask)}
+            className="task-tree__deselect"
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>

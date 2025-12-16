@@ -36,6 +36,7 @@ export interface Task {
   priority: 'low' | 'medium' | 'high' | 'critical';
   start_date: string;
   end_date: string;
+  duration_days?: number; // Длительность в днях
   estimated_hours?: number;
   created_at?: string;
   updated_at?: string;
