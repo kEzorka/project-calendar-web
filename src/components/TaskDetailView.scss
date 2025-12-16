@@ -1,0 +1,79 @@
+@use '../styles/variables' as *;
+
+.task-detail-view {
+  &__header {
+    margin-bottom: $spacing-6;
+
+    h2 {
+      font-size: $font-size-2xl;
+      color: $text-primary;
+      margin-bottom: $spacing-3;
+    }
+  }
+
+  &__badges {
+    display: flex;
+    gap: $spacing-2;
+    flex-wrap: wrap;
+  }
+
+  &__status {
+    background-color: $grey-200;
+    color: $text-primary;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__priority {
+    color: white;
+    padding: $spacing-1 $spacing-3;
+    border-radius: $radius-sm;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__section {
+    margin-bottom: $spacing-6;
+
+    h3 {
+      font-size: $font-size-lg;
+      color: $text-primary;
+      margin-bottom: $spacing-3;
+      font-weight: $font-weight-semibold;
+    }
+
+    p {
+      color: $text-secondary;
+      line-height: $line-height-relaxed;
+    }
+  }
+
+  &__dates {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+
+  &__date-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-3;
+    background-color: $grey-50;
+    border-radius: $radius-md;
+  }
+
+  &__label {
+    color: $text-secondary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+
+  &__value {
+    color: $text-primary;
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+  }
+}

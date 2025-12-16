@@ -66,6 +66,10 @@ const LoginPage: React.FC = () => {
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
+    // Очищаем общую ошибку при изменении поля
+    if (error) {
+      setError('');
+    }
   };
 
   return (

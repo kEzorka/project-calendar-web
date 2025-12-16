@@ -4,6 +4,8 @@ import { Loader } from '../components/ui/Loader';
 import type { User, Task, WorkScheduleDay } from '../types';
 import { apiClient } from '../api/client';
 import { authService } from '../api/authService';
+import { taskService } from '../api/taskService';
+import { assignmentService } from '../minimal_test/api/assignmentService';
 import { getTasksByUserId, getProjectsByUserId } from '../mock';
 import { USE_MOCK } from '../mock';
 import './ProfilePage.scss';
@@ -62,8 +64,15 @@ async function fakeLoadProfileData(): Promise<{
   // Получаем текущего пользователя
   const user = await authService.getCurrentUser();
   
-  // Получаем задачи пользователя из mock данных
-  const tasks = getTasksByUserId(user.id);
+  // Получаем все задачи
+  const allTasks = await taskService.getTasks();
+  
+  // Получаем назначения текущего пользователя
+  const userAssignments = assignmentService.getMockAssignments().filter(a => a.user_id === user.id);
+  const userTaskIds = userAssignments.map(a => a.task_id);
+  
+  // Фильтруем задачи пользователя
+  const tasks = allTasks.filter(t => userTaskIds.includes(t.id));
   
   return new Promise((resolve) => {
     setTimeout(() => {

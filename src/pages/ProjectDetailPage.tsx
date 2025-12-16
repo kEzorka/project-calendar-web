@@ -45,6 +45,7 @@ const ProjectDetailPage: React.FC = () => {
         ...formData,
         parent_task_id: parentId,
       });
+      
       loadProject();
       setIsModalOpen(false);
       setSelectedTask(null); // Сбрасываем выбор после создания
@@ -129,7 +130,7 @@ const ProjectDetailPage: React.FC = () => {
 
       <div className="project-detail-page__assignments">
         <h2>Участники</h2>
-        {id && <AssignmentManager taskId={id} />}
+        {id && <AssignmentManager projectId={id} />}
       </div>
 
       <Modal

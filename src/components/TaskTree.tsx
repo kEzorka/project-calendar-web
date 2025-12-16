@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { taskService } from '../api/taskService';
 import type { Task } from '../types';
+import { Modal } from './ui/Modal';
+import { TaskDetailView } from './TaskDetailView';
 import './TaskTree.scss';
 
 interface TaskNodeProps {
   task: Task;
   level: number;
   onTaskClick: (task: Task) => void;
+  onTaskDoubleClick: (task: Task) => void;
   selectedTaskId: string | null;
 }
 
-const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick, selectedTaskId }) => {
+const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick, onTaskDoubleClick, selectedTaskId }) => {
   const [expanded, setExpanded] = useState(false);
   const [subtasks, setSubtasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
@@ -62,7 +65,11 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick, selectedT
           {loading ? '⌛' : '▶'}
         </button>
 
-        <div className="task-node__info" onClick={() => onTaskClick(task)}>
+        <div 
+          className="task-node__info" 
+          onClick={() => onTaskClick(task)}
+          onDoubleClick={() => onTaskDoubleClick(task)}
+        >
           <span className="task-node__title">{task.title}</span>
           <span className="task-node__status">{getStatusLabel(task.status)}</span>
           <span
@@ -83,6 +90,7 @@ const TaskNode: React.FC<TaskNodeProps> = ({ task, level, onTaskClick, selectedT
                 task={subtask}
                 level={level + 1}
                 onTaskClick={onTaskClick}
+                onTaskDoubleClick={onTaskDoubleClick}
                 selectedTaskId={selectedTaskId}
               />
             ))
@@ -104,6 +112,7 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId, onTaskSelect }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
 
   useEffect(() => {
     loadTasks();
@@ -130,6 +139,10 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId, onTaskSelect }) => {
     }
   };
 
+  const handleTaskDoubleClick = (task: Task) => {
+    setDetailTask(task);
+  };
+
   if (loading) {
     return <div className="task-tree">Загрузка...</div>;
   }
@@ -143,6 +156,7 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId, onTaskSelect }) => {
             task={task} 
             level={0} 
             onTaskClick={handleTaskClick}
+            onTaskDoubleClick={handleTaskDoubleClick}
             selectedTaskId={selectedTask?.id || null}
           />
         ))
@@ -160,6 +174,14 @@ export const TaskTree: React.FC<TaskTreeProps> = ({ taskId, onTaskSelect }) => {
           </button>
         </div>
       )}
+      
+      <Modal
+        isOpen={!!detailTask}
+        onClose={() => setDetailTask(null)}
+        title="Детали задачи"
+      >
+        {detailTask && <TaskDetailView task={detailTask} />}
+      </Modal>
     </div>
   );
 };
