@@ -108,15 +108,7 @@ const ProjectsPage: React.FC = () => {
               hoverable
             >
               <p className="projects-page__description">{project.description}</p>
-              <div className="projects-page__meta">
-                <span className="projects-page__status">{getStatusLabel(project.status)}</span>
-                <span
-                  className="projects-page__priority"
-                  style={{ backgroundColor: getPriorityColor(project.priority) }}
-                >
-                  {project.priority}
-                </span>
-              </div>
+              {/* Для проектов не показываем статус и приоритет */}
             </Card>
           ))}
         </div>
@@ -131,6 +123,7 @@ const ProjectsPage: React.FC = () => {
         <TaskForm
           onSubmit={handleCreateProject}
           onCancel={() => setIsModalOpen(false)}
+          isProject={true}
         />
       </Modal>
     </div>

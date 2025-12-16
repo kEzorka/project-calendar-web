@@ -107,10 +107,13 @@ const ProjectDetailPage: React.FC = () => {
         <div className="project-detail-page__header-content">
           <h1>{project.title}</h1>
           <p className="project-detail-page__description">{project.description}</p>
-          <div className="project-detail-page__meta">
-            <span className="project-detail-page__status">{getStatusLabel(project.status)}</span>
-            <span className="project-detail-page__priority">{project.priority}</span>
-          </div>
+          {/* Для проектов не показываем статус и приоритет */}
+          {project.parent_task_id && (
+            <div className="project-detail-page__meta">
+              <span className="project-detail-page__status">{getStatusLabel(project.status)}</span>
+              <span className="project-detail-page__priority">{project.priority}</span>
+            </div>
+          )}
         </div>
         <Button onClick={handleOpenModal} variant="primary" size="lg">
           + Создать {selectedTask ? 'подзадачу' : 'задачу'}

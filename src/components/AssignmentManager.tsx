@@ -4,6 +4,7 @@ import { Input } from './ui/Input';
 import { Select } from './ui/Select';
 import { Modal } from './ui/Modal';
 import { assignmentService } from '../minimal_test/api/assignmentService';
+import { MOCK_USERS } from '../mock';
 import type { Assignment } from '../types';
 import './AssignmentManager.scss';
 
@@ -11,16 +12,8 @@ interface AssignmentManagerProps {
   taskId: string;
 }
 
-// мок‑пользователи (позже будет поиск от Самины)
-const MOCK_USERS = [
-  { id: '1', username: 'woroncov', email: 'woroncov@example.com' },
-  { id: '2', username: 'eagle', email: 'eagle@example.com' },
-  { id: '3', username: 'whitewolf', email: 'whitewolf@example.com' },
-  { id: '4', username: 'striker', email: 'striker@example.com' },
-];
-
 const ROLE_OPTIONS = [
-  { value: 'owner', label: 'Владелец' },
+  // owner нельзя назначить вручную
   { value: 'supervisor', label: 'Руководитель' },
   { value: 'executor', label: 'Исполнитель' },
   { value: 'hybrid', label: 'Гибридная' },
@@ -45,6 +38,7 @@ export const AssignmentManager: React.FC<AssignmentManagerProps> = ({ taskId }) 
       console.error('Ошибка при загрузке назначений:', err);
     }
   }, [taskId]);
+  
   useEffect(() => {
     loadAssignments();
   }, [loadAssignments]);
@@ -83,7 +77,18 @@ export const AssignmentManager: React.FC<AssignmentManagerProps> = ({ taskId }) 
 
   const getUserName = (userId: string): string => {
     const user = MOCK_USERS.find((u) => u.id === userId);
-    return user?.username || 'Unknown';
+    return user?.full_name || user?.username || 'Unknown';
+  };
+
+  const getRoleLabel = (role: string): string => {
+    const labels: Record<string, string> = {
+      owner: 'Владелец',
+      supervisor: 'Руководитель',
+      executor: 'Исполнитель',
+      hybrid: 'Гибридная',
+      spectator: 'Наблюдатель',
+    };
+    return labels[role] || role;
   };
 
   return (
@@ -101,18 +106,20 @@ export const AssignmentManager: React.FC<AssignmentManagerProps> = ({ taskId }) 
             <div key={assignment.id} className="assignment-manager__item">
               <div className="assignment-manager__info">
                 <span className="assignment-manager__user">{getUserName(assignment.user_id)}</span>
-                <span className="assignment-manager__role">{assignment.role}</span>
+                <span className="assignment-manager__role">{getRoleLabel(assignment.role)}</span>
                 {assignment.allocated_hours > 0 && (
                   <span className="assignment-manager__hours">{assignment.allocated_hours}ч</span>
                 )}
               </div>
-              <Button
-                onClick={() => handleRemoveAssignment(assignment.id)}
-                variant="danger"
-                size="sm"
-              >
-                Удалить
-              </Button>
+              {assignment.role !== 'owner' && (
+                <Button
+                  onClick={() => handleRemoveAssignment(assignment.id)}
+                  variant="danger"
+                  size="sm"
+                >
+                  Удалить
+                </Button>
+              )}
             </div>
           ))}
         </div>
@@ -131,7 +138,7 @@ export const AssignmentManager: React.FC<AssignmentManagerProps> = ({ taskId }) 
             label="Пользователь"
             options={MOCK_USERS.map((u) => ({
               value: u.id,
-              label: u.username,
+              label: u.full_name,
             }))}
             value={formData.user_id}
             onChange={(e) => setFormData({ ...formData, user_id: e.target.value })}
